@@ -97,6 +97,34 @@ module.exports.handleDownload = async (req, res) => {
   });
 };
 
+// EDIT A DOCUMENT PAGE
+module.exports.editPage = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const file = await File.findById(id);
+
+    res.render("pages/edit", { file: file, title: "EDIT" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+// EDIT A DOCUMENT
+module.exports.handleEdit = async (req, res) => {
+  const { id } = req.params;
+  try {
+    await File.findByIdAndUpdate(
+      { _id: id },
+      {
+        ...req.body,
+      }
+    );
+
+    res.redirect("/api/v1/user/");
+  } catch (error) {
+    console.log(error);
+  }
+};
 // DELETE A DOCUMENT
 module.exports.handleDelete = async (req, res) => {
   const { id } = req.params;
