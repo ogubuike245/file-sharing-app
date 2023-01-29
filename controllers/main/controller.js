@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const File = require("../../models/main/model");
+const { hashData, verifyHashedData } = require("../../utils/hashData");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 module.exports.getAllUploads = async (req, res) => {
@@ -54,7 +55,9 @@ module.exports.handleUpload = async (req, res) => {
     if (req.body.password.length < 3) {
       response.json({ message: "PASSWORD SHOULD BE MORE THAN 3 NUMBERS" });
     }
-    fileData.password = await bcrypt.hash(req.body.password, 10);
+
+    // fileData.password = await bcrypt.hash(req.body.password, 10);
+    fileData.password = await hashData(req.body.password, 10);
   }
   const file = await new File(fileData);
   file.fileLink = `${req.headers.origin}/api/v1/user/download/${file.id}`;
@@ -73,7 +76,9 @@ module.exports.handleDownload = async (req, res) => {
       return;
     }
 
-    if (!(await bcrypt.compare(req.body.password, file.password))) {
+    // if (!(await bcrypt.compare(req.body.password, file.password))) {
+
+    if (!(await verifyHashedData(req.body.password, file.password))) {
       res.render("pages/download", {
         error: true,
         title: "DOWNLOAD",

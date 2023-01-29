@@ -1,5 +1,5 @@
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
+// const crypto = require("crypto");
 
 const hashData = async (data, saltRounds = 10) => {
   try {

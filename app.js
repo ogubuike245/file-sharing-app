@@ -15,6 +15,9 @@ app.use(morgan("dev"));
 
 app.set("view engine", "ejs");
 
+app.get("/", (_, response) => {
+  response.redirect("/api/v1/user/");
+});
 app.use("/api/v1/user", Routes);
 
 //SERVER CONNECTION AND MIDDLEWARES
