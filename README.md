@@ -1,5 +1,12 @@
 # file-sharing-app
 
+
+Live project demo link 
+
+https://gubifileshare.cyclic.app/api/v1/user/
+
+
+
 ### THIS  PROJECT IS FOR EDUCTIONAL USE , STUDENTS WILL BE GIVEN ACCESS TO STUDY MATERIALS AND COURSE CONTENT UPON REGISTRATION TO THE SITE AND WILL NEED TO VERIFY THEIR EMAIL.
 
 
