@@ -2,28 +2,38 @@
 <html lang="en">
   <%- include("../partials/head.ejs") %>
   <body>
-    <section class="container">
-      <%- include("../partials/navbar.ejs") %> <% if (locals.file.length > 0) {
-      %> <% file.forEach(element => { %>
-      <article>
-        <h1><%= element.title %></h1>
+    <main>
+      <section class="container_home">
+        <%- include("../partials/navbar.ejs") %> <% if (locals.file.length > 0)
+        { %> <% file.forEach(element => { %>
 
-        <a href="/api/v1/user/document/<%= element._id %>"
-          ><button>READ MORE ABOUT THIS DOCUMENT</button></a
-        >
-        <a href="/api/v1/user/edit/<%= element._id %>"
-          ><button>EDIT THIS DOCUMENT</button></a
-        >
+        <article>
+          <h1><%= element.title %></h1>
+          <div>
+            <a href="/api/v1/user/document/<%= element._id %>"
+              ><button>READ MORE</button></a
+            >
+            <a href="/api/v1/user/edit/<%= element._id %>"
+              ><button>EDIT</button></a
+            >
 
-        <a href="<%= element.fileLink  %>">
-          <button>DOWNLOAD LINK</button>
-        </a>
-      </article>
+            <a href="<%= element.fileLink  %>">
+              <button>DOWNLOAD LINK</button>
+            </a>
+          </div>
+        </article>
 
-      <% }) %> <% } else { %>
+        <% }) %> <% } else { %>
 
-      <h1 class="display">NOTHING UPLOADED</h1>
-      <% } %>
-    </section>
+        <article>
+          <h1 class="display">NOTHING UPLOADED</h1>
+        </article>
+
+        <% } %>
+      </section>
+      <div>ANNOUNCEMENTS</div>
+    </main>
+
+    <%- include("../partials/footer.ejs") %>
   </body>
 </html>
