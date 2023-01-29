@@ -20,4 +20,13 @@ body {
 }
 .container footer {
   grid-area: footer;
+}
+
+.upload-container form {
+  background: green;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem;
+  gap: 1rem;
 }/*# sourceMappingURL=styles.css.map */

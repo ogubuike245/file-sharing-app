@@ -46,8 +46,14 @@ module.exports.handleUpload = async (req, res) => {
     path: req.file.path,
     originalName: req.file.originalname,
     title: req.body.title,
+    description: req.body.description,
+    course: req.body.course,
+    title: req.body.title,
   };
   if (req.body.password != null && req.body.password !== "") {
+    if (req.body.password.length < 3) {
+      response.json({ message: "PASSWORD SHOULD BE MORE THAN 3 NUMBERS" });
+    }
     fileData.password = await bcrypt.hash(req.body.password, 10);
   }
   const file = await new File(fileData);

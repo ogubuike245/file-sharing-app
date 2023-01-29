@@ -1,26 +1,42 @@
 const mongoose = require("mongoose");
 
-const fileSchema = new mongoose.Schema({
-  path: {
-    type: String,
-    required: true,
+const fileSchema = new mongoose.Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    course: {
+      type: String,
+      required: true,
+    },
+
+    path: {
+      type: String,
+      required: true,
+    },
+    originalName: {
+      type: String,
+      required: true,
+    },
+    downloadCount: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+
+    password: {
+      type: String,
+      minlength: [3, "MINIMUM LENGTH OF PASSWORD IS 3 NUMBERS"],
+    },
+    fileLink: String,
   },
-  originalName: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
-  password: String,
-  fileLink: String,
-  downloadCount: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
-});
+  { timestamps: true }
+);
 
 const File = mongoose.model("File", fileSchema);
 
