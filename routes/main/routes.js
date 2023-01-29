@@ -21,3 +21,5 @@ router.post("/download/:id", handleDownload);
 router.delete("/delete/:id", handleDelete);
 
 module.exports = router;
+
+//APP ROUTES

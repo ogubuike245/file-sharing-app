@@ -20,3 +20,5 @@ const connectToDatabase = async (app) => {
 };
 
 module.exports = connectToDatabase;
+
+//DATABASE CONNECTION AND SERVER INITIALISATION

@@ -16,3 +16,5 @@ app.use(morgan("dev"));
 app.set("view engine", "ejs");
 
 app.use("/api/v1/user", Routes);
+
+//SERVER CONNECTION AND MIDDLEWARES
