@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../partials/head.ejs") %>
+  <body>
+    <%- include("../partials/navbar.ejs") %> <% if (locals.error) { %>
+    <div style="color: red; margin-bottom: 1rem">Incorrect Password</div>
+    <% } %>
+    <form method="post">
+      <% if(locals.file.password ) { %>
+      <h1>PASSWORD</h1>
+      <label for="password">Password:</label>
+      <input type="password" id="password" name="password" required />
+      <% } else { %>
+      <h1>NO PASSWORD</h1>
+      <% } %>
+
+      <button style="grid-column: span 2" type="submit">Download</button>
+    </form>
+  </body>
+</html>

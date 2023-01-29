@@ -1,0 +1,23 @@
+body {
+  background: red;
+}
+
+.container {
+  border: 2px solid white;
+  display: grid;
+  grid-template-areas: "navbar navbar" "documents form" "footer footer";
+  grid-template-rows: auto 1fr auto;
+  padding: 2rem;
+}
+.container nav {
+  grid-area: navbar;
+}
+.container .container-documents {
+  grid-area: documents;
+}
+.container .container-form {
+  grid-area: form;
+}
+.container footer {
+  grid-area: footer;
+}/*# sourceMappingURL=styles.css.map */
