@@ -1,3 +1,4 @@
+
 * {
   padding: 0;
   margin: 0;
@@ -127,7 +128,10 @@ header .main a:hover {
 }
 .container_home {
   margin-top: 1rem;
+<<<<<<< HEAD
   padding: 0.2rem;
+=======
+>>>>>>> 5ebcacbe233873c3075af28753d2c9d241412e03
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   grid-template-rows: 1fr;
