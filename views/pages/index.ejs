@@ -7,18 +7,27 @@
         <%- include("../partials/navbar.ejs") %> <% if (locals.file.length > 0)
         { %> <% file.forEach(element => { %>
 
-        <article>
+        <article class="<%= element.type %>">
           <h1><%= element.title %></h1>
+          <h1><%= element.course %></h1>
+          <h1><%= element.createdAt %></h1>
           <div>
             <a href="/api/v1/user/document/<%= element._id %>"
-              ><button>READ MORE</button></a
+              ><button>
+                <box-icon name="right-arrow-alt"></box-icon> READ MORE
+              </button></a
             >
             <a href="/api/v1/user/edit/<%= element._id %>"
-              ><button>EDIT</button></a
-            >
+              ><button>
+                <box-icon name="edit-alt"></box-icon>
+              </button>
+            </a>
 
             <a href="<%= element.fileLink  %>">
-              <button>DOWNLOAD LINK</button>
+              <button>
+                <box-icon type="solid" name="download"></box-icon><%=
+                element.downloadCount %>
+              </button>
             </a>
           </div>
         </article>
@@ -29,7 +38,11 @@
           <h1 class="display">NOTHING UPLOADED</h1>
         </article>
 
-        <% } %>
+        <% } %> <% group.forEach(element => { %>
+
+        <h1><%= element._id.course %></h1>
+
+        <% }) %>
       </section>
       <div>ANNOUNCEMENTS</div>
     </main>

@@ -1,17 +1,25 @@
 const bcrypt = require("bcrypt");
+const moment = require("moment");
 const File = require("../../models/main/model");
 const { hashData, verifyHashedData } = require("../../utils/hashData");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 module.exports.getAllUploads = async (req, res) => {
-  await File.find()
-    .sort({ createdAt: -1 })
-    .then((result) => {
-      res.render("pages/index", { file: result, title: "HOME" });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  try {
+    const file = await File.find().sort({ createdAt: -1 });
+    const group = await File.aggregate([
+      {
+        $group: {
+          _id: { course: "$course" },
+        },
+      },
+    ]);
+
+    console.log(group);
+    res.render("pages/index", { file: file, group, title: "HOME" });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // UPLOAD PAGE
@@ -50,6 +58,7 @@ module.exports.handleUpload = async (req, res) => {
     description: req.body.description,
     course: req.body.course,
     title: req.body.title,
+    ...req.body,
   };
   if (req.body.password != null && req.body.password !== "") {
     if (req.body.password.length < 3) {
@@ -129,8 +138,9 @@ module.exports.handleEdit = async (req, res) => {
 module.exports.handleDelete = async (req, res) => {
   const { id } = req.params;
   try {
+    // await File.deleteMany();
     await File.findByIdAndDelete(id);
-    console.log(id);
+    // console.log(id);
 
     res
       .status(200)
