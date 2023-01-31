@@ -6,11 +6,22 @@
     <div class="upload-container">
       <% if(locals.file) {%>
 
-      <h1><%= locals.file._id %></h1>
+      <h1><%= locals.file.title %></h1>
 
       <% } %>
 
-      <form action="/api/v1/user/edit/<%= file._id %> " method="post">
+      <form
+        action="/api/v1/user/edit/<%= file._id %> "
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <label for="file">File:</label>
+        <input
+          type="file"
+          id="file"
+          name="file"
+          value="<%= file.originalName %> "
+        />
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" value="<%= file.title %> " />
         <label for="course">COURSE:</label>
@@ -34,8 +45,12 @@
         >
 
         <label for="course">PASSWORD:</label>
-        <input type="password" id="password" name="password" />
-
+        <input
+          type="password"
+          id="password"
+          name="password"
+          value="<%= file.password %> "
+        />
         <button style="grid-column: span 2" type="submit">Share</button>
 
         <% if (locals.fileLink != null) { %>

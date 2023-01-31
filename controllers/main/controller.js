@@ -4,19 +4,30 @@ const File = require("../../models/main/model");
 const { hashData, verifyHashedData } = require("../../utils/hashData");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
+
 module.exports.getAllUploads = async (req, res) => {
   try {
     const file = await File.find().sort({ createdAt: -1 });
-    const group = await File.aggregate([
-      {
-        $group: {
-          _id: { course: "$course" },
-        },
-      },
-    ]);
 
-    console.log(group);
-    res.render("pages/index", { file: file, group, title: "HOME" });
+    res.render("pages/index", {
+      file: file,
+      title: "HOME",
+      moment,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+module.exports.getSingleCourseDocuments = async (req, res) => {
+  try {
+    const { course } = req.params;
+    const content = await getCourse(course);
+
+    res.render("pages/course", {
+      course: content,
+      title: course,
+      moment,
+    });
   } catch (error) {
     console.log(error);
   }
@@ -65,7 +76,6 @@ module.exports.handleUpload = async (req, res) => {
       response.json({ message: "PASSWORD SHOULD BE MORE THAN 3 NUMBERS" });
     }
 
-    // fileData.password = await bcrypt.hash(req.body.password, 10);
     fileData.password = await hashData(req.body.password, 10);
   }
   const file = await new File(fileData);
@@ -84,8 +94,6 @@ module.exports.handleDownload = async (req, res) => {
       res.render("pages/download", { title: "DOWNLOAD", file: file });
       return;
     }
-
-    // if (!(await bcrypt.compare(req.body.password, file.password))) {
 
     if (!(await verifyHashedData(req.body.password, file.password))) {
       res.render("pages/download", {
@@ -121,15 +129,21 @@ module.exports.editPage = async (req, res) => {
 // EDIT A DOCUMENT
 module.exports.handleEdit = async (req, res) => {
   const { id } = req.params;
-  try {
-    await File.findByIdAndUpdate(
-      { _id: id },
-      {
-        ...req.body,
-      }
-    );
+  console.log(req.body);
 
-    res.redirect("/api/v1/user/");
+  try {
+    if (req.file !== undefined) {
+      await File.findOneAndUpdate(
+        { _id: id },
+        {
+          ...req.body,
+        }
+      );
+
+      res.redirect("/api/v1/user/");
+    }
+
+    // process all other fields
   } catch (error) {
     console.log(error);
   }
@@ -138,8 +152,8 @@ module.exports.handleEdit = async (req, res) => {
 module.exports.handleDelete = async (req, res) => {
   const { id } = req.params;
   try {
-    // await File.deleteMany();
-    await File.findByIdAndDelete(id);
+    await File.deleteMany();
+    // await File.findByIdAndDelete(id);
     // console.log(id);
 
     res
@@ -149,3 +163,20 @@ module.exports.handleDelete = async (req, res) => {
     console.log(error);
   }
 };
+
+//
+
+const getCourse = (courseTitle) =>
+  File.aggregate([
+    {
+      $match: {
+        course: courseTitle,
+      },
+    },
+
+    {
+      $project: {
+        path: 0,
+      },
+    },
+  ]);

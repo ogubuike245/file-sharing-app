@@ -3,48 +3,23 @@
   <%- include("../partials/head.ejs") %>
   <body>
     <main>
+      <%- include("../partials/navbar.ejs") %>
       <section class="container_home">
-        <%- include("../partials/navbar.ejs") %> <% if (locals.file.length > 0)
-        { %> <% file.forEach(element => { %>
-
-        <article class="<%= element.type %>">
-          <h1><%= element.title %></h1>
-          <h1><%= element.course %></h1>
-          <h1><%= element.createdAt %></h1>
-          <div>
-            <a href="/api/v1/user/document/<%= element._id %>"
-              ><button>
-                <box-icon name="right-arrow-alt"></box-icon> READ MORE
-              </button></a
-            >
-            <a href="/api/v1/user/edit/<%= element._id %>"
-              ><button>
-                <box-icon name="edit-alt"></box-icon>
-              </button>
-            </a>
-
-            <a href="<%= element.fileLink  %>">
-              <button>
-                <box-icon type="solid" name="download"></box-icon><%=
-                element.downloadCount %>
-              </button>
-            </a>
-          </div>
-        </article>
-
-        <% }) %> <% } else { %>
-
-        <article>
-          <h1 class="display">NOTHING UPLOADED</h1>
-        </article>
-
-        <% } %> <% group.forEach(element => { %>
-
-        <h1><%= element._id.course %></h1>
-
-        <% }) %>
+        <h1>PHYSICS CLASS</h1>
+        <a href="/api/v1/user/document/course/PHYSICS"
+          ><button>
+            <box-icon name="right-arrow-alt"></box-icon>
+          </button>
+        </a>
       </section>
-      <div>ANNOUNCEMENTS</div>
+      <section class="container_home">
+        <h1>CHEMISTRY CLASS</h1>
+        <a href="/api/v1/user/document/course/CHEMISTRY"
+          ><button>
+            <box-icon name="right-arrow-alt"></box-icon>
+          </button>
+        </a>
+      </section>
     </main>
 
     <%- include("../partials/footer.ejs") %>

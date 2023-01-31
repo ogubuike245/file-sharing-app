@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../partials/head.ejs") %>
+  <body>
+    <main>
+      <section class="container_home">
+        <%- include("../partials/navbar.ejs") %> <% if (locals.course.length >
+        0) { %> <% course.forEach(document => { %>
+
+        <article class="<%= document.type %>">
+          <h1><%= document.title %></h1>
+          <h1><%= document.course %></h1>
+          <h1><%= moment(document.createdAt).fromNow() %></h1>
+          <div>
+            <a href="/api/v1/user/document/<%= document._id %>"
+              ><button>
+                <box-icon name="right-arrow-alt"></box-icon> READ MORE
+              </button></a
+            >
+            <a href="/api/v1/user/edit/<%= document._id %>"
+              ><button>
+                <box-icon name="edit-alt"></box-icon>
+              </button>
+            </a>
+
+            <a href="<%= document.fileLink  %>">
+              <button>
+                <box-icon type="solid" name="download"></box-icon><%=
+                document.downloadCount %>
+              </button>
+            </a>
+          </div>
+        </article>
+
+        <% }) %> <% } else { %>
+
+        <article>
+          <h1 class="display">NOTHING UPLOADED</h1>
+        </article>
+
+        <% } %>
+      </section>
+    </main>
+
+    <%- include("../partials/footer.ejs") %>
+  </body>
+</html>
