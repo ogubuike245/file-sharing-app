@@ -3,16 +3,16 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "../../dist/uploads/"));
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date().toString() + file.originalname);
-  },
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.join(__dirname, "../../dist/uploads/"));
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date().toString() + file.originalname);
+//   },
+// });
 
-const upload = multer({ storage: storage });
+const upload = multer({ dest: "/tmps" });
 const {
   getAllUploads,
   uploadPage,
