@@ -77,7 +77,8 @@ module.exports.handleUpload = async (req, res) => {
     fileData.password = await hashData(req.body.password, 10);
   }
   const file = await new Course(fileData);
-  file.fileLink = `${req.headers.origin}/api/v1/course/download/${file.id}`;
+  // file.fileLink = `${req.headers.origin}/api/v1/course/download/${file.id}`;
+  file.fileLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${file.id}`;
   file.save();
 
   res.redirect("/api/v1/course/");
