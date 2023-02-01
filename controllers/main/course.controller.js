@@ -1,18 +1,15 @@
-const bcrypt = require("bcrypt");
 const moment = require("moment");
-const File = require("../../models/main/model");
+const Course = require("../../models/main/course/course.model");
 const { hashData, verifyHashedData } = require("../../utils/hashData");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
 module.exports.getAllUploads = async (req, res) => {
   try {
-    const file = await File.find().sort({ createdAt: -1 });
+    // const course = await Course.find().sort({ createdAt: -1 });
 
-    res.render("pages/index", {
-      file: file,
+    res.render("pages/course/index", {
       title: "HOME",
-      moment,
     });
   } catch (error) {
     console.log(error);
@@ -23,7 +20,7 @@ module.exports.getSingleCourseDocuments = async (req, res) => {
     const { course } = req.params;
     const content = await getCourse(course);
 
-    res.render("pages/course", {
+    res.render("pages/course/course", {
       course: content,
       title: course,
       moment,
@@ -35,29 +32,30 @@ module.exports.getSingleCourseDocuments = async (req, res) => {
 
 // UPLOAD PAGE
 module.exports.uploadPage = async (req, res) => {
-  res.render("pages/upload", { title: "UPLOAD" });
+  res.render("pages/course/upload", { title: "UPLOAD" });
 };
 
 // DOWNLOAD PAGE
 module.exports.downloadPage = async (req, res) => {
-  const file = await File.findById(req.params.id);
-  res.render("pages/download", { title: "DOWNLOAD", file: file });
+  const course = await Course.findById(req.params.id);
+  res.render("pages/course/download", { title: "DOWNLOAD", file: file });
 };
 
 // GET INFO ABOUT A SINGLE DOCUMENT
 module.exports.singleDocumentPage = async (request, response) => {
   const id = request.params.id;
-  File.findById(id)
-    .then((result) => {
-      response.render("pages/single", {
-        document: result,
-        title: "SINGLE",
-        redirect: "/api/v1/user/",
-      });
-    })
-    .catch((error) => {
-      console.log(error);
+
+  try {
+    const groupedCourse = await Course.findById(id);
+
+    response.render("pages/course/single", {
+      document: groupedCourse,
+      title: "SINGLE",
+      redirect: "/api/v1/course/",
     });
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 // HANDLE THE UPLOADS
@@ -78,25 +76,25 @@ module.exports.handleUpload = async (req, res) => {
 
     fileData.password = await hashData(req.body.password, 10);
   }
-  const file = await new File(fileData);
-  file.fileLink = `${req.headers.origin}/api/v1/user/download/${file.id}`;
+  const file = await new Course(fileData);
+  file.fileLink = `${req.headers.origin}/api/v1/course/download/${file.id}`;
   file.save();
 
-  res.redirect("/api/v1/user/");
+  res.redirect("/api/v1/course/");
 };
 
 // DOWNLOAD A DOCUMENT
 module.exports.handleDownload = async (req, res) => {
-  const file = await File.findById(req.params.id);
+  const file = await Course.findById(req.params.id);
 
   if (file.password != null) {
     if (req.body.password == null) {
-      res.render("pages/download", { title: "DOWNLOAD", file: file });
+      res.render("pages/course/download", { title: "DOWNLOAD", file: file });
       return;
     }
 
     if (!(await verifyHashedData(req.body.password, file.password))) {
-      res.render("pages/download", {
+      res.render("pages/course/download", {
         error: true,
         title: "DOWNLOAD",
         file: file,
@@ -118,9 +116,9 @@ module.exports.handleDownload = async (req, res) => {
 module.exports.editPage = async (req, res) => {
   const { id } = req.params;
   try {
-    const file = await File.findById(id);
+    const file = await Course.findById(id);
 
-    res.render("pages/edit", { file: file, title: "EDIT" });
+    res.render("pages/course/edit", { file: file, title: "EDIT" });
   } catch (error) {
     console.log(error);
   }
@@ -140,7 +138,7 @@ module.exports.handleEdit = async (req, res) => {
         }
       );
 
-      res.redirect("/api/v1/user/");
+      res.redirect("/api/v1/course/");
     }
 
     // process all other fields
@@ -151,14 +149,14 @@ module.exports.handleEdit = async (req, res) => {
 // DELETE A DOCUMENT
 module.exports.handleDelete = async (req, res) => {
   const { id } = req.params;
+  // console.log(id);
   try {
-    await File.deleteMany();
-    // await File.findByIdAndDelete(id);
-    // console.log(id);
+    // await Course.deleteMany();
+    await Course.findByIdAndDelete(id);
 
     res
       .status(200)
-      .json({ message: "FILE DELETED", redirect: "/api/v1/user/" });
+      .json({ message: "FILE DELETED", redirect: "/api/v1/course/" });
   } catch (error) {
     console.log(error);
   }
@@ -167,7 +165,7 @@ module.exports.handleDelete = async (req, res) => {
 //
 
 const getCourse = (courseTitle) =>
-  File.aggregate([
+  Course.aggregate([
     {
       $match: {
         course: courseTitle,

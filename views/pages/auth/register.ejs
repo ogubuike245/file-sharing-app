@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../../partials/head.ejs") %>
+  <body>
+    <%- include("../../partials/navbar.ejs") %>
+
+    <div class="auth-container">
+      <% if (locals.message) { %>
+      <h1>message</h1>
+
+      <% } %>
+      <h1>REGISTER</h1>
+      <form action="/api/v1/auth/register" method="post">
+        <label for="email">Email</label>
+        <input type="email" name="email" />
+        <p class="email-error"></p>
+        <label for="password">Password</label>
+        <input type="password" name="password" />
+        <p class="password-error"></p>
+        <label for="firstname">Firstname</label>
+        <input type="text" name="firstname" />
+        <p class="firstname-error"></p>
+        <label for="lastname">Lastname</label>
+        <input type="text" name="lastname" />
+        <p class="lastname-error"></p>
+        <button>REGISTER</button>
+      </form>
+    </div>
+    <%- include('../../partials/footer') -%>
+
+    <script src="/js/auth/signup.js"></script>
+  </body>
+</html>

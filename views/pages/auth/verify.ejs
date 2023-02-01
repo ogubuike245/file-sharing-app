@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../../partials/head.ejs") %>
+  <body>
+    <%- include("../../partials/navbar.ejs") %>
+
+    <div class="auth-container">
+      <h1>VERIFICATION</h1>
+      <form action="/api/v1/auth/verify" method="post">
+        <label for="otp">INPUT OTP</label>
+        <input type="text" name="otp" />
+        <p class="error"></p>
+
+        <button>VERIFY ACCOUNT</button>
+      </form>
+    </div>
+    <%- include('../../partials/footer') -%>
+
+    <script src="/js/auth/signup.js"></script>
+  </body>
+</html>

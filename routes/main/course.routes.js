@@ -1,7 +1,18 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const upload = multer({ dest: "/tmp" });
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, path.join(__dirname, "../../dist/uploads/"));
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date().toISOString() + file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 const {
   getAllUploads,
   uploadPage,
@@ -13,7 +24,7 @@ const {
   getSingleCourseDocuments,
   handleEdit,
   handleDownload,
-} = require("../../controllers/main/controller");
+} = require("../../controllers/main/course.controller");
 
 router.get("/", getAllUploads);
 router.get("/upload", uploadPage);

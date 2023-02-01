@@ -1,32 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-  <%- include("../partials/head.ejs") %>
+  <%- include("../../partials/head.ejs") %>
   <body>
     <main>
       <section class="container_home">
-        <%- include("../partials/navbar.ejs") %> <% if (locals.course.length >
-        0) { %> <% course.forEach(document => { %>
+        <%- include("../../partials/navbar.ejs") %> <% if (locals.course.length
+        > 0) { %> <% course.forEach(document => { %>
 
         <article class="<%= document.type %>">
           <h1><%= document.title %></h1>
           <h1><%= document.course %></h1>
           <h1><%= moment(document.createdAt).fromNow() %></h1>
           <div>
-            <a href="/api/v1/user/document/<%= document._id %>"
-              ><button>
-                <box-icon name="right-arrow-alt"></box-icon> READ MORE
-              </button></a
+            <a href="/api/v1/course/document/<%= document._id %>"
+              ><button><i class="bx bx-book-reader"></i> READ MORE</button></a
             >
-            <a href="/api/v1/user/edit/<%= document._id %>"
+            <a href="/api/v1/course/edit/<%= document._id %>"
               ><button>
-                <box-icon name="edit-alt"></box-icon>
+                <i class="bx bxs-edit-alt"></i>
               </button>
             </a>
 
             <a href="<%= document.fileLink  %>">
               <button>
-                <box-icon type="solid" name="download"></box-icon><%=
-                document.downloadCount %>
+                <i class="bx bx-download bx-flip-horizontal"></i>
+                <%= document.downloadCount %>
               </button>
             </a>
           </div>
@@ -42,6 +40,6 @@
       </section>
     </main>
 
-    <%- include("../partials/footer.ejs") %>
+    <%- include("../../partials/footer.ejs") %>
   </body>
 </html>

@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
-const config = require("./env.config");
 
-const { API_PORT, MONG0_DB_URI } = config;
+const { API_PORT, MONG0_DB_URI } = process.env;
 
 const connectToDatabase = async (app) => {
   try {
