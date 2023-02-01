@@ -6,8 +6,8 @@ const cors = require("cors");
 const apicache = require("apicache");
 // const path = require("path");
 
-const courseRoutes = require("./routes/main/course.routes");
-const authRoutes = require("./routes/main/auth.routes");
+const courseRoutes = require("./routes/main/course/course.routes");
+const authRoutes = require("./routes/main/auth/auth.routes");
 const connectToDatabase = require("./config/database.config");
 
 const app = express();

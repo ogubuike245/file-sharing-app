@@ -8,7 +8,7 @@ const storage = multer.diskStorage({
     cb(null, path.join(__dirname, "../../dist/uploads/"));
   },
   filename: function (req, file, cb) {
-    cb(null, Date().toISOString() + file.originalname);
+    cb(null, Date().toString() + file.originalname);
   },
 });
 
@@ -24,7 +24,7 @@ const {
   getSingleCourseDocuments,
   handleEdit,
   handleDownload,
-} = require("../../controllers/main/course.controller");
+} = require("../../../controllers/main/course.controller");
 
 router.get("/", getAllUploads);
 router.get("/upload", uploadPage);
