@@ -12,7 +12,7 @@ const path = require("path");
 //   },
 // });
 
-const upload = multer({ dest: "/tmps" });
+const upload = multer({ dest: "tmps" });
 const {
   getAllUploads,
   uploadPage,
