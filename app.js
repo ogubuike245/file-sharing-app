@@ -3,7 +3,7 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const compression = require("compression");
 const cors = require("cors");
-const apicache = require("apicache");
+// const apicache = require("apicache");
 // const path = require("path");
 
 const courseRoutes = require("./routes/main/course/course.routes");
@@ -15,14 +15,14 @@ connectToDatabase(app);
 
 // MIDDLEWARES AND STATIC FILES
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("./dist"));
 // app.use(express.static(__dirname));
 app.use(morgan("dev"));
 app.use(cors());
 app.use(helmet());
 app.use(compression());
-const cache = apicache.middleware;
+// const cache = apicache.middleware;
 
 app.set("view engine", "ejs");
 
