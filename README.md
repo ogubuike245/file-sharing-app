@@ -3,7 +3,7 @@
 
 Live project demo link 
 
-https://gubifileshare.cyclic.app/api/v1/user/
+https://gubifileshare.cyclic.app/
 
 
 
