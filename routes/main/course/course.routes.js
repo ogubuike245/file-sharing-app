@@ -3,16 +3,9 @@ const router = express.Router();
 const multer = require("multer");
 const path = require("path");
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, path.join(__dirname, "../../dist/uploads/"));
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date().toString() + file.originalname);
-//   },
-// });
-
-const upload = multer({ dest: "/tmp" });
+// const upload = multer({ dest: "/tmp" });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 const {
   getAllUploads,
   uploadPage,
@@ -40,3 +33,5 @@ router.delete("/delete/:id", handleDelete);
 module.exports = router;
 
 //APP ROUTES
+
+// Upload file route
