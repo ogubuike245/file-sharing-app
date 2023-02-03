@@ -1,23 +1,22 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("path");
 
-// const upload = multer({ dest: "/tmp" });
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({ dest: "dist/uploads" });
 const {
-  getAllUploads,
-  uploadPage,
-  editPage,
   handleUpload,
-  downloadPage,
   handleDelete,
-  singleDocumentPage,
-  getSingleCourseDocuments,
   handleEdit,
   handleDownload,
-} = require("../../../controllers/main/course.controller");
+} = require("../../../controllers/main/course/course.controller");
+const {
+  uploadPage,
+  editPage,
+  downloadPage,
+  singleDocumentPage,
+  getSingleCourseDocuments,
+  getAllUploads,
+} = require("../../../controllers/main/course/pages.controller");
 
 router.get("/", getAllUploads);
 router.get("/upload", uploadPage);

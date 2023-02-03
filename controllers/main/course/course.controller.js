@@ -1,20 +1,21 @@
 const moment = require("moment");
-const Course = require("../../models/main/course/course.model");
-const { hashData, verifyHashedData } = require("../../utils/hashData");
 const cloudinary = require("cloudinary").v2;
+const bcrypt = require("bcrypt");
+const fs = require("fs");
+var request = require("request");
+const Course = require("../../../models/main/course/course.model");
+const { hashData, verifyHashedData } = require("../../../utils/hashData");
 
 cloudinary.config({
-  cloud_name: "datmbb439",
-  api_key: "815386214487686",
-  api_secret: "-Hb0eu1YPzy2vZXt3ECL_oXMqTY",
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
 module.exports.getAllUploads = async (req, res) => {
   try {
-    // const course = await Course.find().sort({ createdAt: -1 });
-
     res.render("pages/course/index", {
       title: "HOME",
     });
@@ -50,13 +51,12 @@ module.exports.downloadPage = async (req, res) => {
 
 // GET INFO ABOUT A SINGLE DOCUMENT
 module.exports.singleDocumentPage = async (request, response) => {
-  const id = request.params.id;
+  const { id } = request.params;
 
   try {
-    const groupedCourse = await Course.findById(id);
-
+    const content = await Course.findById(id);
     response.render("pages/course/single", {
-      document: groupedCourse,
+      document: content,
       title: "SINGLE",
       redirect: "/api/v1/course/",
     });
@@ -68,42 +68,25 @@ module.exports.singleDocumentPage = async (request, response) => {
 // HANDLE THE UPLOADS
 module.exports.handleUpload = async (req, res) => {
   try {
-    const file = req.file;
-    const result = await new Promise((resolve, reject) => {
-      cloudinary.uploader
-        .upload_stream({ resource_type: "auto" }, (err, result) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(result);
-          }
-        })
-        .end(file.buffer);
-    });
-
-    console.log(result);
     const courseData = {
-      path: result.public_id,
+      path: req.file.path,
       originalName: req.file.originalname,
+
       title: req.body.title,
       description: req.body.description,
       course: req.body.course,
-      title: req.body.title,
       ...req.body,
     };
-
     if (req.body.password != null && req.body.password !== "") {
-      if (req.body.password.length < 3) {
-        response.json({ message: "PASSWORD SHOULD BE MORE THAN 3 NUMBERS" });
-      }
-      courseData.password = await hashData(req.body.password, 10);
+      courseData.password = await bcrypt.hash(req.body.password, 10);
     }
 
     const course = await new Course(courseData);
-    course.fileLink = `http://localhost:5000/api/v1/course/download/${course.id}`;
-    // course.fileLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
+    // course.fileLink = `http://localhost:5000/api/v1/course/download/${course.id}`;
+    course.fileLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
     await course.save();
 
+    res.redirect(`/api/v1/course/document/course/${course.course}`);
     // res.redirect("/api/v1/course/");
   } catch (err) {
     console.error(err);
@@ -133,21 +116,8 @@ module.exports.handleDownload = async (req, res) => {
 
   file.downloadCount++;
   await file.save();
-  console.log(file.downloadCount);
 
-  const public_id = file.path;
-
-  cloudinary.api.resource(public_id, (error, result) => {
-    if (error) {
-      return res.status(400).send(error);
-    }
-
-    res.redirect(result.secure_url);
-  });
-
-  // res.download(file.path, file.originalName, {
-  //   info: "DOWNLOAD ABOUT TO START",
-  // });
+  res.download(file.path, file.originalName);
 };
 
 // EDIT A DOCUMENT PAGE
@@ -169,15 +139,16 @@ module.exports.handleEdit = async (req, res) => {
 
   try {
     if (req.file !== undefined) {
-      await File.findOneAndUpdate(
+      await Course.findOneAndUpdate(
         { _id: id },
         {
+          // path: req.file.path,
           ...req.body,
         }
       );
-
-      res.redirect("/api/v1/course/");
     }
+
+    res.redirect(`/api/v1/course/document/course/${req.body.course}`);
 
     // process all other fields
   } catch (error) {
@@ -187,7 +158,7 @@ module.exports.handleEdit = async (req, res) => {
 // DELETE A DOCUMENT
 module.exports.handleDelete = async (req, res) => {
   const { id } = req.params;
-  // console.log(id);
+  console.log(id);
   try {
     // await Course.deleteMany();
     await Course.findByIdAndDelete(id);

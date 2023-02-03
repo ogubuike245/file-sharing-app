@@ -6,7 +6,7 @@ const {
   login,
   registerUser,
   loginUser,
-} = require("../../../controllers/main/auth.controller");
+} = require("../../../controllers/main/auth/auth.controller");
 
 router.get("/register", register);
 router.get("/login", login);

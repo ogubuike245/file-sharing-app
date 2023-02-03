@@ -17,45 +17,18 @@
         enctype="multipart/form-data"
       >
         <label for="file">File:</label>
-        <input
-          type="file"
-          id="file"
-          name="file"
-          value="<%= file.originalName %> "
-        />
+        <input type="file" id="file" name="file" value="<%= file.path %> " />
         <label for="title">Title:</label>
         <input type="text" id="title" name="title" value="<%= file.title %> " />
-        <label for="course">COURSE:</label>
 
-        <select name="course" id="course">
-          <% if (locals.file.course === "CHEMISTRY") { %>
-          <option value="<%= file.course %> ">
-            CURRENTLY SELECTED :- <%= file.course %>
-          </option>
-          <option value="PHYSICS">PHYSICS</option>
-          <% } %> <% if (locals.file.course === "PHYSICS") { %>
-          <option value="<%= file.course %> ">
-            CURRENTLY SELECTED :- <%= file.course %>
-          </option>
-          <option value="CHEMISTRY">CHEMISTRY</option>
-          <% } %>
-        </select>
         <label for="description">DESCRIPTION:</label>
         <textarea name="description" id="description" cols="30" rows="10">
 <%= file.description %></textarea
         >
 
         <label for="course">PASSWORD:</label>
-        <input type="password" id="password" name="password" value="<%=
-        file.password %> " ..//>
+        <input type="password" id="password" name="password" />
         <button style="grid-column: span 2" type="submit">Share</button>
-
-        <% if (locals.fileLink != null) { %>
-        <div>
-          Your file is uploaded at
-          <a href="<%= locals.fileLink %>"><%= locals.fileLink %></a>
-        </div>
-        <% } %>
       </form>
     </div>
     <%- include("../../partials/footer.ejs") %>

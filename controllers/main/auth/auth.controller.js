@@ -1,10 +1,10 @@
-const { Auth } = require("../../models/main/auth/auth.model");
-const { Token } = require("../../models/main/auth/token.model");
-const { hashData, verifyHashedData } = require("../../utils/hashData");
-const { handleErrors } = require("../../utils/error.handling");
-const { sendEmail } = require("../../utils/send.email");
+const { Auth } = require("../../../models/main/auth/auth.model");
+const { Token } = require("../../../models/main/auth/token.model");
+const { hashData, verifyHashedData } = require("../../../utils/hashData");
+const { handleErrors } = require("../../../utils/error.handling");
+const { sendEmail } = require("../../../utils/send.email");
 const crypto = require("crypto");
-const emailTemplate = require("../../utils/email.template");
+const emailTemplate = require("../../../utils/email.template");
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
 module.exports.register = async (req, res) => {
@@ -81,22 +81,6 @@ module.exports.loginUser = async (req, res) => {
   });
 };
 
-// GET INFO ABOUT A SINGLE DOCUMENT
-module.exports.singleDocumentPage = async (request, response) => {
-  const id = request.params.id;
-  File.findById(id)
-    .then((result) => {
-      response.render("pages/single", {
-        document: result,
-        title: "SINGLE",
-        redirect: "/api/v1/user/",
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
 // EDIT A DOCUMENT PAGE
 
 // EDIT A DOCUMENT
@@ -104,21 +88,6 @@ module.exports.singleDocumentPage = async (request, response) => {
 // DELETE A DOCUMENT
 
 //
-
-const getCourse = (courseTitle) =>
-  File.aggregate([
-    {
-      $match: {
-        course: courseTitle,
-      },
-    },
-
-    {
-      $project: {
-        path: 0,
-      },
-    },
-  ]);
 
 function validateEmail(email) {
   const request =
