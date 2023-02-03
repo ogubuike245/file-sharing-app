@@ -1,22 +1,15 @@
 const { Auth } = require("../../../models/main/auth/auth.model");
-const { Token } = require("../../../models/main/auth/token.model");
+const { OTP } = require("../../../models/main/auth/otp.model");
 const { hashData, verifyHashedData } = require("../../../utils/hashData");
 const { handleErrors } = require("../../../utils/error.handling");
 const { sendEmail } = require("../../../utils/send.email");
 const crypto = require("crypto");
 const emailTemplate = require("../../../utils/email.template");
+const { sendOTP } = require("../../../utils/sendOTP");
+const { verifyOTP } = require("../../../utils/verifyOTP");
+const bcrypt = require("bcrypt");
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
-module.exports.register = async (req, res) => {
-  res.render("pages/auth/register", {
-    title: "Register",
-  });
-};
-module.exports.login = async (req, res) => {
-  res.render("pages/auth/login", {
-    title: "Login",
-  });
-};
 module.exports.registerUser = async (req, res) => {
   let { email, password, firstname, lastname } = req.body;
   console.log(req.body);
@@ -70,14 +63,88 @@ module.exports.registerUser = async (req, res) => {
   }
 };
 
-module.exports.verifyUser = async (req, res) => {
-  res.render("pages/auth/verify", {
-    title: "Verify",
-  });
+function generateOTP() {
+  return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+module.exports.requestOTP = async (req, res) => {
+  try {
+    const { email, subject, message, duration } = req.body;
+
+    if (!(email && subject && message)) {
+      throw Error("EMPTY VALUES");
+    }
+
+    await OTP.deleteOne({ email });
+    const generatedOTP = await generateOTP();
+
+    console.log(generatedOTP);
+
+    sendEmail(
+      email,
+      subject,
+      `<p> ${message}</p>
+
+      <p>
+    ${generatedOTP} 
+    </p>
+
+    <p>This code <b>expires in
+     ${duration} hour(s)</p>`
+    );
+
+    const hashedOTP = await bcrypt.hash(generatedOTP, 10);
+
+    const newOTP = await new OTP({
+      email,
+      otp: hashedOTP,
+      createdAt: Date.now(),
+      expiresAt: Date.now() + 3600000 * +duration,
+    });
+
+    console.log(newOTP);
+
+    const createdOTPRecord = newOTP.save();
+
+    res.status(200).json(createdOTPRecord);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
 };
+
+module.exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!(email && otp)) {
+      throw Error("EMPTY VALUES");
+    }
+    const matchedOTPRecord = await OTP.findOne({ email });
+
+    if (!matchedOTPRecord) {
+      throw Error("NO RECORD FOUND");
+    }
+    const { expiresAt } = matchedOTPRecord;
+
+    if (expiresAt < Date.now()) {
+      await OTP.deleteOne({ email });
+      throw Error("CODE EXPIRED , REQUEST NEW ONE");
+    }
+    const validOTP = await bcrypt.compare(req.body.otp, matchedOTPRecord.otp);
+    res.status(200).json(validOTP);
+  } catch (error) {
+    res.status(400).send(error.message);
+  }
+};
+
 module.exports.loginUser = async (req, res) => {
   res.render("pages/auth/login", {
     title: "Login",
+  });
+};
+module.exports.verifyUser = async (req, res) => {
+  res.render("pages/auth/verify", {
+    title: "Verify",
   });
 };
 
