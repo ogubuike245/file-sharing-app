@@ -1,44 +1,77 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
-// const isEmail = require("validator");
+const Schema = mongoose.Schema;
 
-const authSchema = new mongoose.Schema(
-  {
-    email: {
-      type: String,
-      required: [true, "Please enter an email"],
-      unique: true,
-      lowercase: true,
-      // validate: [isEmail, "Please enter a valid email"],
-    },
-    password: {
-      type: String,
-      required: [true, "Please enter a password"],
-      minlength: [6, "Minimum password length is 6 characters"],
-    },
-    firstname: {
-      type: String,
-      required: [true, "Please enter your firstname"],
-    },
-    lastname: {
-      type: String,
-      required: [true, "Please enter your lastname"],
-    },
-
-    verified: { type: Boolean, default: false },
+const userSchema = new Schema({
+  firstName: {
+    type: String,
+    required: true,
   },
-  { timestamps: true }
-);
+  lastName: {
+    type: String,
+    required: true,
+  },
+  registrationNumber: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  latestOtp: {
+    type: String,
+    required: false,
+  },
+  otpHistory: [
+    {
+      otp: {
+        type: String,
+        required: true,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = { User };
+
+// // Generate OTP and save to user schema
+// userSchema.methods.generateOTP = function () {
+//   // Generate 6-digit random OTP
+//   this.otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+//   // Save OTP to OTP history
+//   this.otpHistory.push({ otp: this.otp });
+
+//   // Save changes to the user schema
+//   return this.save();
+// };
 
 // MONGOOSE PRE SAVE METHODS TO PERFORM A FUNCTION BEFORE DOCUMENT IS SAVED TO DATABASE
-authSchema.pre("save", async function (next) {
+userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
 // MONGOOSE STATIC METHOD TO LOG THE USER IN
-authSchema.statics.login = async function (email, password) {
+userSchema.statics.login = async function (email, password) {
   if (isEmail(email)) {
     const user = await this.findOne({ email });
     if (user) {
@@ -57,9 +90,3 @@ authSchema.statics.login = async function (email, password) {
     throw Error("incorrect Email Format");
   }
 };
-
-const Auth = mongoose.model("auth", authSchema);
-
-module.exports = Auth;
-
-module.exports = { Auth };
