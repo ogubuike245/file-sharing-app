@@ -1,8 +1,23 @@
-const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const userSchema = new Schema({
+const TokenSchema = new Schema({
+  value: {
+    type: String,
+    required: true,
+  },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  expires: { type: Date, default: Date.now, expires: 3600 },
+});
+
+const Token = mongoose.model("Token", TokenSchema);
+
+const UserSchema = new Schema({
   firstName: {
     type: String,
     required: true,
@@ -16,57 +31,37 @@ const userSchema = new Schema({
     required: true,
     unique: true,
   },
+  password: {
+    type: String,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
     unique: true,
   },
-  password: {
-    type: String,
-    required: true,
-  },
-  latestOtp: {
-    type: String,
-    required: false,
-  },
-  otpHistory: [
-    {
-      otp: {
-        type: String,
-        required: true,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
-    },
-  ],
   isVerified: {
     type: Boolean,
     default: false,
   },
+  role: {
+    type: String,
+    required: true,
+    default: "user",
+  },
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", UserSchema);
 
-module.exports = { User };
-
-// // Generate OTP and save to user schema
-// userSchema.methods.generateOTP = function () {
-//   // Generate 6-digit random OTP
-//   this.otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-//   // Save OTP to OTP history
-//   this.otpHistory.push({ otp: this.otp });
-
-//   // Save changes to the user schema
-//   return this.save();
-// };
+module.exports = {
+  User,
+  Token,
+};
 
 // MONGOOSE PRE SAVE METHODS TO PERFORM A FUNCTION BEFORE DOCUMENT IS SAVED TO DATABASE
 userSchema.pre("save", async function (next) {
   const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
+  this.password = bcrypt.hash(this.password, salt);
   next();
 });
 

@@ -1,5 +1,5 @@
-const { User } = require("../../../models/main/auth/auth.model");
-const { OTP } = require("../../../models/main/auth/otp.model");
+const { User, Token } = require("../../../models/main/auth/auth.model");
+
 const { hashData, verifyHashedData } = require("../../../utils/hashData");
 const { handleErrors } = require("../../../utils/error.handling");
 const { sendEmail } = require("../../../utils/send.email");
@@ -9,6 +9,25 @@ const { sendOTP } = require("../../../utils/sendOTP");
 const { verifyOTP } = require("../../../utils/verifyOTP");
 const bcrypt = require("bcrypt");
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
+
+const sendVerificationEmail = async (user, otp) => {
+  let transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "youremail@gmail.com",
+      pass: "yourpassword",
+    },
+  });
+
+  let mailOptions = {
+    from: "youremail@gmail.com",
+    to: user.email,
+    subject: "Email Verification OTP",
+    text: `Your OTP is ${otp}`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
 
 module.exports.registerUser = async (req, res) => {
   let { email, password, firstName, lastName, registrationNumber } = req.body;
@@ -52,27 +71,25 @@ module.exports.registerUser = async (req, res) => {
       // const URL = `/api/v1/auth/verify/${created_token_model._id}/${created_token}`;
 
       //STORE THE USER DATA ALONG WITH THE ENCRYPTED OTP IN THE DATABASE
-      const ONE_HOUR = 60 * 60 * 1000;
+
       const user = new User({
         firstName,
         lastName,
         email,
-        password,
         registrationNumber,
+        password,
         isVerified: false,
-        latestOtp: hashedOtp,
+      });
+      const token = new Token({
+        value: hashedOtp,
+        user: user._id,
       });
 
-      user.otpHistory.push({
-        otp: hashedOtp,
-      });
       await user.save();
+      await token.save();
 
-      await sendEmail(
-        email,
-        "Verification OTP",
-        `Your OTP is: ${generatedOTP}`
-      );
+      sendVerificationEmail(user, generatedOTP);
+
       console.log(user);
 
       res
@@ -90,51 +107,6 @@ function generateOTP() {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
-module.exports.requestOTP = async (req, res) => {
-  try {
-    const { email, subject, message, duration } = req.body;
-
-    if (!(email && subject && message)) {
-      throw Error("EMPTY VALUES");
-    }
-
-    await OTP.deleteOne({ email });
-    const generatedOTP = await generateOTP();
-
-    console.log(generatedOTP);
-
-    sendEmail(
-      email,
-      subject,
-      `<p> ${message}</p>
-
-      <p>
-    ${generatedOTP} 
-    </p>
-
-    <p>This code <b>expires in
-     ${duration} hour(s)</p>`
-    );
-
-    const hashedOTP = await bcrypt.hash(generatedOTP, 10);
-
-    const newOTP = await new OTP({
-      email,
-      otp: hashedOTP,
-      createdAt: Date.now(),
-      expiresAt: Date.now() + 3600000 * +duration,
-    });
-
-    console.log(newOTP);
-
-    const createdOTPRecord = newOTP.save();
-
-    res.status(200).json(createdOTPRecord);
-  } catch (error) {
-    res.status(400).send(error.message);
-  }
-};
-
 module.exports.verifyOTP = async (req, res) => {
   try {
     // GET VALUES FROM REQUEST BODT
@@ -147,28 +119,34 @@ module.exports.verifyOTP = async (req, res) => {
 
     // CHECK IF THE USER EXISTS
     const existingUser = await User.findOne({ email });
+    const existingToken = await Token.findOne({
+      user: existingUser._id,
+      expires: { $gt: Date.now() },
+    });
 
     if (!existingUser) {
       throw Error("NO RECORD FOUND");
     }
 
-    if (
-      !existingUser.latestOtp ||
-      existingUser.latestOtp.validUntil < Date.now()
-    ) {
-      throw new Error("OTP has expired");
+    if (!existingToken) {
+      throw new Error("OTP NOT FOUND OR HAS EXPIRED");
     }
 
     // CHECK IF THE OTP ENTERED IS CORRECT
-    const validOTP = await bcrypt.compare(req.body.otp, existingUser.latestOtp);
+    const validOTP = await bcrypt.compare(req.body.otp, existingToken.value);
     if (!validOTP) {
       throw Error("INVALID OTP ENTERED");
-    } else {
-      existingUser.isVerified = true;
-      existingUser.latestOtp = null;
-      console.log(existingUser);
-      res.status(200).json(validOTP);
     }
+
+    await User.updateOne(
+      { _id: existingUser._id },
+      { $set: { isVerified: true } }
+    );
+
+    await Token.deleteOne({ _id: existingToken._id });
+
+    console.log(existingUser);
+    res.status(200).json(validOTP);
   } catch (error) {
     res.status(400).send(error.message);
   }
