@@ -5,23 +5,19 @@ const User = require("../../models/main/auth/auth.model");
 // CHECK IF THERE IS A LOGGED IN USER
 const checkForLoggedInUser = (request, response, next) => {
   const token = request.cookies.jwt;
-
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, async (error, decodedToken) => {
       if (error) {
         response.locals.user = null;
-        console.log("CHECKED USER EMPTY");
         next();
       } else {
         let user = await User.findById(decodedToken.id);
         response.locals.user = user;
-        console.log("CHECKED USER", decodedToken);
         next();
       }
     });
   } else {
     response.locals.user = null;
-    console.log("CHECKED USER EMPTY");
     next();
   }
 };

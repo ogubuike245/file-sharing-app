@@ -1,4 +1,4 @@
-export default (request, response, next) => {
+module.exports = (request, response, next) => {
   const allowedMethods = [
     "OPTIONS",
     "HEAD",

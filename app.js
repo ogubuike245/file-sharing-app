@@ -10,21 +10,21 @@ const authRoutes = require("./routes/main/auth/auth.routes");
 const connectToDatabase = require("./config/database.config");
 const { checkForLoggedInUser } = require("./middlewares/auth/auth.middleware");
 
+// const { allowedMethods } = require("./middlewares/auth/allowed.methods");
+
 const app = express();
 connectToDatabase(app);
 
-// MIDDLEWARES AND STATIC FILES
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// MIDDLEWARE AND STATIC FILES
 app.use(express.static("./dist"));
+// app.use(allowedMethods);
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-// app.use(express.static(__dirname));
-app.use(morgan("dev"));
-
-app.use(cors());
-app.use(helmet());
 app.use(compression());
+app.use(helmet());
+app.use(cors());
+app.use(morgan("dev"));
 
 app.use((request, response, next) => {
   response.locals.path = request.path;

@@ -1,8 +1,9 @@
 const bcrypt = require("bcrypt");
-const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
-const { User, Token } = require("../../../models/main/auth/auth.model");
-const { handleErrors } = require("../../../utils/error.handling");
+const User = require("../../../models/main/auth/auth.model");
+const Token = require("../../../models/main/auth/token.model");
+
 const {
   sendVerificationEmail,
   validateName,
@@ -56,6 +57,8 @@ module.exports.registerUser = async (request, response) => {
     const hashedOtp = await bcrypt.hash(generatedOTP, saltRounds);
 
     //STORE THE USER DATA ALONG WITH THE ENCRYPTED OTP IN THE DATABASE
+    // const salt = await bcrypt.genSalt();
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const user = new User({
       firstName,
@@ -63,7 +66,7 @@ module.exports.registerUser = async (request, response) => {
       email,
       registrationNumber,
       selectedCourse,
-      password,
+      password: hashedPassword,
       isVerified: false,
     });
     const token = new Token({
@@ -136,47 +139,8 @@ module.exports.verifyOTP = async (request, response) => {
 };
 
 module.exports.loginUser = async (request, response) => {
-  try {
-    const { email, password } = request.body;
-    // Find the user with the given email
-    const user = await User.findOne({ email });
-
-    // Check if the user exists
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    // Verify the password
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      throw new Error("Incorrect password");
-    }
-
-    // Check if the user is verified
-    if (!user.isVerified) {
-      throw new Error("User not verified");
-    }
-
-    // Check if the user exists in the Token model and the Token has not expired
-    const tokenModel = await Token.findOne({ user: user._id });
-    if (!tokenModel || tokenModel.isExpired) {
-      return res.status(400).send("Token has expired or is invalid.");
-    }
-
-    //TODO: CHECK IF THE USER EMAIL EXISTS BUT HAS NOT BEEN VERIFIED AND IN THIS CASE A NEW TOKEN WILL BE SENT TO THE USER
-
-    const token = createToken(user._id);
-    response.cookie("jwt", token, {
-      httpOnly: true,
-      maximumAge: maximumAge * 1000,
-    });
-    response.status(200).json({
-      user: user._id,
-    });
-  } catch (error) {
-    // ERROR HANDLERS
-    response.status(400).json(error);
-  }
+  const { email, password } = request.body;
+  loginUser(email, password, response);
 };
 
 module.exports.userLogout = async (request, response) => {
@@ -184,13 +148,36 @@ module.exports.userLogout = async (request, response) => {
   response.redirect("/");
 };
 
+// CREATE A JWT TOKEN
 const maximumAge = 3 * 24 * 60 * 60;
 const createToken = (id) => {
-  return jwt.sign({ id }, JWT_SECRET, {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: maximumAge,
   });
 };
 
+// LOG USER IN CUSTOM ASYNC FUNCTION
+async function loginUser(email, password, response) {
+  try {
+    const user = await User.authenticate(email, password);
+    if (user) {
+      console.log("Login successful");
+      const token = createToken(user._id);
+      response.cookie("jwt", token, {
+        httpOnly: true,
+        maximumAge: maximumAge * 1000,
+      });
+      response.redirect("/");
+      // response.status(200).json({
+      //   user: user._id,
+      // });
+    } else {
+      console.log("Incorrect email or password");
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
 // EDIT A DOCUMENT PAGE
 
 // EDIT A DOCUMENT

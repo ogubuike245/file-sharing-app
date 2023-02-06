@@ -1,8 +1,11 @@
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
+const {
+  validateEmail,
+} = require("../../../controllers/main/auth/utils/auth.utils");
 const Schema = mongoose.Schema;
 
-const UserSchema = new Schema({
+const userSchema = new Schema({
   firstName: {
     type: String,
     required: true,
@@ -41,56 +44,39 @@ const UserSchema = new Schema({
   },
 });
 
-const User = mongoose.model("User", UserSchema);
-
-const TokenSchema = new Schema({
-  value: {
-    type: String,
-    required: true,
-  },
-  user: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
-    required: true,
-  },
-  expires: { type: Date, default: Date.now, expires: 3600 },
-});
-
-const Token = mongoose.model("Token", TokenSchema);
-
-TokenSchema.methods.isExpired = function() {
-  return Date.now() >= this.expires;
-};
-
-module.exports = {
-  User,
-  Token,
-};
-
-// MONGOOSE PRE SAVE METHODS TO PERFORM A FUNCTION BEFORE DOCUMENT IS SAVED TO DATABASE
-UserSchema.pre("save", async function (next) {
-  const salt = await bcrypt.genSalt();
-  this.password = bcrypt.hash(this.password, salt);
-  next();
-});
-
 // MONGOOSE STATIC METHOD TO LOG THE USER IN
-UserSchema.statics.login = async function (email, password) {
-  if (isEmail(email)) {
+userSchema.statics.authenticate = async function (email, password) {
+  if (validateEmail(email)) {
     const user = await this.findOne({ email });
-    if (user) {
-      if (user.verified === false) {
-        throw Error("not verified");
-      }
 
-      const auth = await bcrypt.compare(password, user.password);
-      if (auth) {
-        return user;
-      }
-      throw Error("incorrect password");
+    console.log(user);
+    // Check if the user exists
+    if (!user) {
+      console.log("User not found");
     }
-    throw Error("Email Does Not Exist");
-  } else {
-    throw Error("incorrect Email Format");
+    // Check if the user is verified
+    if (!user.isVerified) {
+      console.log("User not verified");
+
+      // Check if the user exists in the Token model and the Token has not expired
+      // const tokenModel = await Token.findOne({ user: user._id });
+      // if (!tokenModel || tokenModel.isExpired) {
+      //   console.log("Token has expired or is invalid.");
+      // }
+    }
+    // Verify the password
+    const isPasswordCorrect = bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      console.log("Incorrect password");
+    } else {
+      return user;
+    }
+
+    console.log("incorrect Email Format");
   }
 };
+
+////////////////////////////
+const User = mongoose.model("User", userSchema);
+
+module.exports = User;
