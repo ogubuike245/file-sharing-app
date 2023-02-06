@@ -49,22 +49,6 @@ module.exports.downloadPage = async (req, res) => {
   res.render("pages/course/download", { title: "DOWNLOAD", file: course });
 };
 
-// GET INFO ABOUT A SINGLE DOCUMENT
-module.exports.singleDocumentPage = async (request, response) => {
-  const { id } = request.params;
-
-  try {
-    const content = await Course.findById(id);
-    response.render("pages/course/single", {
-      document: content,
-      title: "SINGLE",
-      redirect: "/api/v1/course/",
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 // HANDLE THE UPLOADS
 module.exports.handleUpload = async (req, res) => {
   try {
@@ -118,18 +102,6 @@ module.exports.handleDownload = async (req, res) => {
   await file.save();
 
   res.download(file.path, file.originalName);
-};
-
-// EDIT A DOCUMENT PAGE
-module.exports.editPage = async (req, res) => {
-  const { id } = req.params;
-  try {
-    const file = await Course.findById(id);
-
-    res.render("pages/course/edit", { file: file, title: "EDIT" });
-  } catch (error) {
-    console.log(error);
-  }
 };
 
 // EDIT A DOCUMENT
