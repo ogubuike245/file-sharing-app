@@ -1,105 +1,83 @@
-const { User, Token } = require("../../../models/main/auth/auth.model");
-
-const { hashData, verifyHashedData } = require("../../../utils/hashData");
-const { handleErrors } = require("../../../utils/error.handling");
-const { sendEmail } = require("../../../utils/send.email");
-const crypto = require("crypto");
-const emailTemplate = require("../../../utils/email.template");
-const { sendOTP } = require("../../../utils/sendOTP");
-const { verifyOTP } = require("../../../utils/verifyOTP");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
+
+const { User, Token } = require("../../../models/main/auth/auth.model");
+const { handleErrors } = require("../../../utils/error.handling");
+const {
+  sendVerificationEmail,
+  validateName,
+  validateEmail,
+  trimRequestBody,
+} = require("./utils/auth.utils");
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
-const sendVerificationEmail = async (user, otp) => {
-  let transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: "youremail@gmail.com",
-      pass: "yourpassword",
-    },
-  });
-
-  let mailOptions = {
-    from: "youremail@gmail.com",
-    to: user.email,
-    subject: "Email Verification OTP",
-    text: `Your OTP is ${otp}`,
-  };
-
-  await transporter.sendMail(mailOptions);
+module.exports.getAll = async (request, response) => {
+  const user = await User.find();
+  response.status(200).json(user);
 };
+module.exports.registerUser = async (request, response) => {
+  let {
+    email,
+    password,
+    firstName,
+    lastName,
+    registrationNumber,
+    selectedCourse,
+  } = request.body;
 
-module.exports.registerUser = async (req, res) => {
-  let { email, password, firstName, lastName, registrationNumber } = req.body;
+  try {
+    // REMOVE WHITESPACE WITH CUSTOM TRIM FUNCTION
+    trimRequestBody(
+      email,
+      password,
+      firstName,
+      lastName,
+      registrationNumber,
+      selectedCourse
+    );
+    const existing_userModel_user = await User.findOne({ email: email });
 
-  email = email.trim();
-  password = password.trim();
-  firstName = firstName.trim();
-  lastName = lastName.trim();
-  registrationNumber = registrationNumber.trim();
+    if (!(email && password && firstName && lastName && registrationNumber))
+      console.log("empty input fields");
+    if (!validateName(firstName && lastName))
+      console.log("Invalid Name Entered");
+    if (!validateEmail(email)) console.log("invalid email format ");
+    if (password.length < 6) console.log("password is too short");
 
-  const existing_userModel_user = await User.findOne({ email: email });
-
-  if (!(email && password && firstName && lastName && registrationNumber)) {
-    throw Error("empty input fields");
-  } else if (!validateName(firstName)) {
-    throw Error("Invalid firstname entered");
-  } else if (!validateName(lastName)) {
-    throw Error("Invalid lastname entered");
-  } else if (!validateEmail(email)) {
-    throw Error("invalid email format  entered");
-  } else if (password.length < 6) {
-    throw Error("password is short");
-  } else if (existing_userModel_user.latestOtp === null) {
-    throw Error("EMAIL EXIST AND VERIFIED ");
-  } else if (existing_userModel_user.latestOtp) {
-    throw Error("EXIST BUT NOT VERIFIED");
-  } else if (existing_userModel_user) {
-    res.status(400).json({ message: "EMAIL ALREADY EXIST" });
-  } else {
-    try {
-      // GENERATE AND HASH THE OTP
-      const generatedOTP = generateOTP();
-      const saltRounds = 10;
-      const hashedOtp = await bcrypt.hash(generatedOTP, saltRounds);
-
-      console.log(generatedOTP);
-
-      // SEND AN EMAIL TO THE USER WITH THE OTP INFO
-
-      const URL = `http://localhost:5000/api/v1/auth/verify/${email}/${hashedOtp}/`;
-      // const URL = `/api/v1/auth/verify/${created_token_model._id}/${created_token}`;
-
-      //STORE THE USER DATA ALONG WITH THE ENCRYPTED OTP IN THE DATABASE
-
-      const user = new User({
-        firstName,
-        lastName,
-        email,
-        registrationNumber,
-        password,
-        isVerified: false,
-      });
-      const token = new Token({
-        value: hashedOtp,
-        user: user._id,
-      });
-
-      await user.save();
-      await token.save();
-
-      sendVerificationEmail(user, generatedOTP);
-
-      console.log(user);
-
-      res
-        .status(200)
-        .json({ message: "VERIFICATION EMAIL SENT, PLEASE CHECK YOUR INBOX" });
-    } catch (error) {
-      // ERROR HANDLERS
-      const errors = handleErrors(error);
-      res.status(400).json(error);
+    if (!User.schema.path("courses").enumValues.includes(selectedCourse)) {
+      console.log("Invalid course selection");
     }
+    if (existing_userModel_user) {
+      console.log({ message: "EMAIL ALREADY EXIST" });
+    }
+    // GENERATE AND HASH THE OTP
+    const generatedOTP = generateOTP();
+    const saltRounds = 10;
+    const hashedOtp = await bcrypt.hash(generatedOTP, saltRounds);
+
+    //STORE THE USER DATA ALONG WITH THE ENCRYPTED OTP IN THE DATABASE
+
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      registrationNumber,
+      selectedCourse,
+      password,
+      isVerified: false,
+    });
+    const token = new Token({
+      value: hashedOtp,
+      user: user._id,
+    });
+
+    await user.save();
+    await token.save();
+
+    await sendVerificationEmail(user, generatedOTP);
+    console.log(user, token);
+  } catch (error) {
+    response.status(400).json({ message: error.message });
   }
 };
 
@@ -107,35 +85,39 @@ function generateOTP() {
   return Math.floor(1000 + Math.random() * 9000).toString();
 }
 
-module.exports.verifyOTP = async (req, res) => {
+module.exports.verifyOTP = async (request, response) => {
   try {
     // GET VALUES FROM REQUEST BODT
-    const { email, otp } = req.body;
+    const { email, otp } = request.body;
 
     // VERIFY IF THE VALUES EXIST
     if (!(email && otp)) {
-      throw Error("EMPTY VALUES");
+      console.log("EMPTY VALUES");
     }
 
     // CHECK IF THE USER EXISTS
     const existingUser = await User.findOne({ email });
     const existingToken = await Token.findOne({
       user: existingUser._id,
-      expires: { $gt: Date.now() },
     });
+    console.log(existingUser._id);
+    console.log(existingToken);
 
     if (!existingUser) {
-      throw Error("NO RECORD FOUND");
+      console.log("NO RECORD FOUND");
     }
 
     if (!existingToken) {
-      throw new Error("OTP NOT FOUND OR HAS EXPIRED");
+      console.log("OTP NOT FOUND OR HAS EXPIRED");
     }
 
     // CHECK IF THE OTP ENTERED IS CORRECT
-    const validOTP = await bcrypt.compare(req.body.otp, existingToken.value);
+    const validOTP = await bcrypt.compare(
+      request.body.otp,
+      existingToken.value
+    );
     if (!validOTP) {
-      throw Error("INVALID OTP ENTERED");
+      console.log("INAVLID OTP");
     }
 
     await User.updateOne(
@@ -146,20 +128,66 @@ module.exports.verifyOTP = async (req, res) => {
     await Token.deleteOne({ _id: existingToken._id });
 
     console.log(existingUser);
-    res.status(200).json(validOTP);
+
+    response.redirect("/api/v1/auth/login");
   } catch (error) {
-    res.status(400).send(error.message);
+    response.status(400).send(error.message);
   }
 };
 
-module.exports.loginUser = async (req, res) => {
-  res.render("pages/auth/login", {
-    title: "Login",
-  });
+module.exports.loginUser = async (request, response) => {
+  try {
+    const { email, password } = request.body;
+    // Find the user with the given email
+    const user = await User.findOne({ email });
+
+    // Check if the user exists
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    // Verify the password
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (!isPasswordCorrect) {
+      throw new Error("Incorrect password");
+    }
+
+    // Check if the user is verified
+    if (!user.isVerified) {
+      throw new Error("User not verified");
+    }
+
+    // Check if the user exists in the Token model and the Token has not expired
+    const tokenModel = await Token.findOne({ user: user._id });
+    if (!tokenModel || tokenModel.isExpired) {
+      return res.status(400).send("Token has expired or is invalid.");
+    }
+
+    //TODO: CHECK IF THE USER EMAIL EXISTS BUT HAS NOT BEEN VERIFIED AND IN THIS CASE A NEW TOKEN WILL BE SENT TO THE USER
+
+    const token = createToken(user._id);
+    response.cookie("jwt", token, {
+      httpOnly: true,
+      maximumAge: maximumAge * 1000,
+    });
+    response.status(200).json({
+      user: user._id,
+    });
+  } catch (error) {
+    // ERROR HANDLERS
+    response.status(400).json(error);
+  }
 };
-module.exports.verifyUser = async (req, res) => {
-  res.render("pages/auth/verify", {
-    title: "Verify",
+
+module.exports.userLogout = async (request, response) => {
+  response.cookie("jwt", "", { maximumAge: 1 });
+  response.redirect("/");
+};
+
+const maximumAge = 3 * 24 * 60 * 60;
+const createToken = (id) => {
+  return jwt.sign({ id }, JWT_SECRET, {
+    expiresIn: maximumAge,
   });
 };
 
@@ -170,13 +198,3 @@ module.exports.verifyUser = async (req, res) => {
 // DELETE A DOCUMENT
 
 //
-
-function validateEmail(email) {
-  const request =
-    /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return request.test(email);
-}
-function validateName(name) {
-  const request = /^[a-zA-z]*$/;
-  return request.test(name);
-}

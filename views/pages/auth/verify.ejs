@@ -6,12 +6,19 @@
 
     <div class="auth-container">
       <h1>VERIFICATION</h1>
-      <form action="/api/v1/auth/verify" method="post">
-        <label for="otp">INPUT OTP</label>
-        <input type="text" name="otp" />
-        <p class="error"></p>
+      <form action="/api/v1/auth/verify/email" method="post">
+        <div>
+          <label for="email">EMAIL</label>
+          <h1><%= email %></h1>
+          <input type="hidden" name="email" value="<%= email %>" />
+        </div>
+        <div>
+          <label for="otp">INPUT OTP</label>
+          <input type="text" name="otp" />
+          <p class="error"></p>
+        </div>
 
-        <button>VERIFY ACCOUNT</button>
+        <button type="submit">VERIFY ACCOUNT</button>
       </form>
     </div>
     <%- include('../../partials/footer') -%>
