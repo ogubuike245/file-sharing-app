@@ -1,4 +1,5 @@
-const { User, Token } = require("../../../models/main/auth/auth.model");
+const User = require("../../../models/main/auth/auth.model");
+const Token = require("../../../models/main/auth/token.model");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
@@ -16,11 +17,6 @@ module.exports.register = async (req, res) => {
   } else {
     res.status(500).send("Error: User schema not defined properly");
   }
-};
-module.exports.login = async (req, res) => {
-  res.render("pages/auth/login", {
-    title: "Login",
-  });
 };
 
 module.exports.verifyPAGE = async (request, response) => {
@@ -56,6 +52,12 @@ module.exports.verifyPAGE = async (request, response) => {
   } catch (error) {
     response.status(400).send(error.message);
   }
+};
+
+module.exports.login = async (req, res) => {
+  res.render("pages/auth/login", {
+    title: "Login",
+  });
 };
 
 // EDIT A DOCUMENT PAGE

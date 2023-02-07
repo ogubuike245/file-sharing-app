@@ -26,14 +26,14 @@ const trimRequestBody = (
 const sendVerificationEmail = async (user, generatedOTP) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: process.env.HOTMAIL_HOST,
+      service: process.env.GMAIL_HOST,
       auth: {
-        user: process.env.HOTMAIL,
-        pass: process.env.HOTMAIL_PASSWORD,
+        user: process.env.GMAIL,
+        pass: process.env.GMAIL_PASSWORD,
       },
     });
     await transporter.sendMail({
-      from: process.env.HOTMAIL,
+      from: process.env.GMAIL,
       to: user.email,
       subject: "Email Verification OTP",
       html: `<h1> Your OTP is ${generatedOTP} </h1>

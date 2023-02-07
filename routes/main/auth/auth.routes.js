@@ -5,6 +5,7 @@ const {
   registerUser,
   loginUser,
   verifyOTP,
+  sendOTP,
   getAll,
   userLogout,
 } = require("../../../controllers/main/auth/auth.controller");
@@ -21,6 +22,7 @@ router.get("/verify/:email", verifyPAGE);
 router.get("/login", isLoggedIn, login);
 router.get("/logout", userLogout);
 
+router.post("/otp", sendOTP);
 router.post("/register", registerUser);
 router.post("/verify/email", verifyOTP);
 router.post("/login", loginUser);

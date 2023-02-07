@@ -2,8 +2,8 @@ const express = require("express");
 const router = express.Router();
 const multer = require("multer");
 
-// const upload = multer({ dest: "dist/uploads" });
-const upload = multer({ dest: "/tmp" });
+const upload = multer({ dest: "dist/uploads" });
+// const upload = multer({ dest: "/tmp" });
 const {
   handleUpload,
   handleDelete,
@@ -18,20 +18,23 @@ const {
   getSingleCourseDocuments,
   getAllUploads,
 } = require("../../../controllers/main/course/pages.controller");
+const { checkAdmin } = require("../../../middlewares/auth/auth.middleware");
+
+// PAGE ONLY ROUTES
 
 router.get("/", getAllUploads);
-router.get("/upload", uploadPage);
-router.get("/download/:id", downloadPage);
+router.get("/upload", checkAdmin, uploadPage);
+router.get("/edit/:id", checkAdmin, editPage);
 router.get("/document/:id", singleDocumentPage);
 router.get("/document/course/:course", getSingleCourseDocuments);
-router.get("/edit/:id", editPage);
-router.post("/upload", upload.single("file"), handleUpload);
+router.get("/download/:id", downloadPage);
+
+// OTHER ROUTES
+router.post("/upload", checkAdmin, upload.single("file"), handleUpload);
+router.post("/edit/:id", checkAdmin, upload.single("file"), handleEdit);
+router.delete("/delete/:id", checkAdmin, handleDelete);
 router.post("/download/:id", handleDownload);
-router.post("/edit/:id", upload.single("file"), handleEdit);
-router.delete("/delete/:id", handleDelete);
 
 module.exports = router;
 
 //APP ROUTES
-
-// Upload file route

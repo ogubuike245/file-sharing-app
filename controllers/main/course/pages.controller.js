@@ -1,7 +1,6 @@
 const moment = require("moment");
 
 const Course = require("../../../models/main/course/course.model");
-const { hashData, verifyHashedData } = require("../../../utils/hashData");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 

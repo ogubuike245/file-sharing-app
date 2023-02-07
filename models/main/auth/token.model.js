@@ -14,8 +14,10 @@ const TokenSchema = new Schema({
   expires: { type: Date, default: Date.now, expires: 3600 },
 });
 
-const Token = mongoose.model("Token", TokenSchema);
-
 TokenSchema.methods.isExpired = function () {
   return Date.now() >= this.expires;
 };
+
+const Token = mongoose.model("Token", TokenSchema);
+
+module.exports = Token;

@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const User = require("../../models/main/auth/auth.model");
 
-// CHECK IF THERE IS A LOGGED IN USER
+// CHECK IF THERE IS A LOGGED IN USER FROM THE JWT TOKEN
 const checkForLoggedInUser = (request, response, next) => {
   const token = request.cookies.jwt;
   if (token) {
@@ -21,6 +21,8 @@ const checkForLoggedInUser = (request, response, next) => {
     next();
   }
 };
+
+// CHECK FOR IF THE USER IS LOGGED IN BEFORE REDIRECTING USER
 const isLoggedIn = (request, response, next) => {
   if (response.locals.user) {
     response.redirect("/");
@@ -29,10 +31,36 @@ const isLoggedIn = (request, response, next) => {
   }
 };
 
+// CHECK FOR USER ROLE AS ADMIN TO DENY ENTRY TO CERTAIN ROUTES
+
+const checkAdmin = (request, response, next) => {
+  const token = request.cookies.jwt;
+  if (token) {
+    jwt.verify(token, process.env.JWT_SECRET, async (error, decodedToken) => {
+      if (error) {
+        response.locals.user = null;
+        response.redirect("/");
+      } else {
+        let user = await User.findById(decodedToken.id);
+        response.locals.user = user;
+        if (response.locals.user.role === "admin") {
+          next();
+        } else {
+          response.redirect("/");
+        }
+        next();
+      }
+    });
+  } else {
+    response.locals.user = null;
+    response.redirect("/");
+  }
+};
+
+// CHECK TO SEE IF THE  JSON WEB TOKEN EXISTS AND ALSO IF THE TOKEN HAS BEEN VERIFIED
 const tokenVerification = (request, response, next) => {
   const token = request.cookies.jwt;
 
-  // CHECK TO SEE IF THE  JSON WEB TOKEN EXISTS AND ALSO IF THE TOKEN HAS BEEN VERIFIED
   if (token) {
     jwt.verify(token, process.env.JWT_SECRET, (error, decodedToken) => {
       if (error) {
@@ -52,4 +80,5 @@ module.exports = {
   tokenVerification,
   isLoggedIn,
   checkForLoggedInUser,
+  checkAdmin,
 };

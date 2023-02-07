@@ -79,6 +79,7 @@ module.exports.registerUser = async (request, response) => {
 
     await sendVerificationEmail(user, generatedOTP);
     console.log(user, token);
+    response.redirect(`/api/v1/auth/verify/${user.email}`);
   } catch (error) {
     response.status(400).json({ message: error.message });
   }
@@ -138,6 +139,36 @@ module.exports.verifyOTP = async (request, response) => {
   }
 };
 
+module.exports.sendOTP = async (request, response) => {
+  const { email } = request.body;
+  const user = await User.findOne({ email });
+  console.log(user);
+  if (!user) {
+    return console.log("User not found");
+  }
+  if (!user.isVerified) {
+    console.log("User not verified");
+    // Check if the user exists in the Token model and the Token has not expired
+    const tokenModel = await Token.findOne({ user: user._id });
+    if(tokenModel){
+      await Token.deleteOne({ _id: tokenModel._id });
+    }
+
+    // GENERATE AND HASH THE OTP
+    const generatedOTP = generateOTP();
+    const saltRounds = 10;
+    const hashedOtp = await bcrypt.hash(generatedOTP, saltRounds);
+
+    const token = new Token({
+      value: hashedOtp,
+      user: user._id,
+    });
+    await token.save();
+    await sendVerificationEmail(user, generatedOTP);
+    console.log(user, token);
+    response.redirect(`/api/v1/auth/verify/${user.email}`);
+  }
+};
 module.exports.loginUser = async (request, response) => {
   const { email, password } = request.body;
   loginUser(email, password, response);
