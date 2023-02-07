@@ -1,16 +1,6 @@
 const moment = require("moment");
-const cloudinary = require("cloudinary").v2;
 const bcrypt = require("bcrypt");
-const fs = require("fs");
-var request = require("request");
 const Course = require("../../../models/main/course/course.model");
-const { hashData, verifyHashedData } = require("../../../utils/hashData");
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
@@ -62,9 +52,6 @@ module.exports.handleUpload = async (req, res) => {
       password: req.body.password,
     };
 
-    console.log(req.file);
-    console.log(req.body);
-    console.log(courseData);
     if (req.body.password != null && req.body.password !== "") {
       courseData.password = await bcrypt.hash(req.body.password, 10);
     }
@@ -74,8 +61,8 @@ module.exports.handleUpload = async (req, res) => {
     course.fileLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
     await course.save();
 
-    // res.redirect(`/api/v1/course/document/course/${course.course}`);
-    res.redirect("/api/v1/course/");
+    res.redirect(`/api/v1/course/document/course/${course.course}`);
+    // res.redirect("/api/v1/course/");
   } catch (err) {
     console.error(err);
     return "Error uploading file";
