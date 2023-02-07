@@ -43,7 +43,9 @@ const checkAdmin = (request, response, next) => {
       } else {
         let user = await User.findById(decodedToken.id);
         response.locals.user = user;
+        console.log(user);
         if (response.locals.user.role === "admin") {
+          console.log(response.locals.user.role);
           next();
         } else {
           response.redirect("/");

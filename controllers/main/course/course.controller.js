@@ -124,8 +124,8 @@ module.exports.handleDelete = async (req, res) => {
   console.log(id);
   try {
     // await Course.deleteMany();
-    // await Course.findByIdAndDelete(id);
-    await Course.deleteOne({ _id: ObjectID(req.params.id) });
+    await Course.findByIdAndDelete(id);
+    // await Course.deleteOne({ _id: ObjectID(req.params.id) });
 
     res.redirect("/");
   } catch (error) {

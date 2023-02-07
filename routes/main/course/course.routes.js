@@ -32,7 +32,7 @@ router.get("/download/:id", downloadPage);
 // OTHER ROUTES
 router.post("/upload", upload.single("file"), handleUpload);
 router.post("/edit/:id", checkAdmin, upload.single("file"), handleEdit);
-router.post("/delete/:id", checkAdmin, handleDelete);
+router.post("/delete/:id", handleDelete);
 router.post("/download/:id", handleDownload);
 
 module.exports = router;
