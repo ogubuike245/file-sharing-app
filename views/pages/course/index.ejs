@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
   <%- include("../../partials/head.ejs") %>
+
   <body>
     <main>
-      <%- include("../../partials/navbar.ejs") %>
+      <%- include("../../partials/navbar.ejs") %> <%
+      locals.User.schema.path('courses').enumValues.forEach(course => { %>
+
       <section class="container_home">
-        <h1>PHYSICS CLASS</h1>
-        <a href="/api/v1/course/document/course/PHYSICS"
-          ><button>
+        <a href="/api/v1/course/document/course/<%= course %>">
+          <button>
+            <h1><%= course %> CLASS</h1>
             <i class="bx bx-right-arrow-alt"></i>
           </button>
         </a>
       </section>
-      <section class="container_home">
-        <h1>CHEMISTRY CLASS</h1>
-        <a href="/api/v1/course/document/course/CHEMISTRY"
-          ><button>
-            <i class="bx bx-right-arrow-alt"></i>
-          </button>
-        </a>
-      </section>
+
+      <% }) %>
     </main>
 
     <%- include("../../partials/footer.ejs") %>

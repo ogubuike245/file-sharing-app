@@ -55,23 +55,27 @@ module.exports.handleUpload = async (req, res) => {
     const courseData = {
       path: req.file.path,
       originalName: req.file.originalname,
-
       title: req.body.title,
+      type: req.body.type,
       description: req.body.description,
       course: req.body.course,
-      ...req.body,
+      password: req.body.password,
     };
+
+    console.log(req.file);
+    console.log(req.body);
+    console.log(courseData);
     if (req.body.password != null && req.body.password !== "") {
       courseData.password = await bcrypt.hash(req.body.password, 10);
     }
 
     const course = await new Course(courseData);
-    // course.fileLink = `http://localhost:5000/api/v1/course/download/${course.id}`;
+    // // course.fileLink = `http://localhost:5000/api/v1/course/download/${course.id}`;
     course.fileLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
     await course.save();
 
-    res.redirect(`/api/v1/course/document/course/${course.course}`);
-    // res.redirect("/api/v1/course/");
+    // res.redirect(`/api/v1/course/document/course/${course.course}`);
+    res.redirect("/api/v1/course/");
   } catch (err) {
     console.error(err);
     return "Error uploading file";
@@ -133,11 +137,10 @@ module.exports.handleDelete = async (req, res) => {
   console.log(id);
   try {
     // await Course.deleteMany();
-    await Course.findByIdAndDelete(id);
+    // await Course.findByIdAndDelete(id);
+    await Course.deleteOne({ _id: ObjectID(req.params.id) });
 
-    res
-      .status(200)
-      .json({ message: "FILE DELETED", redirect: "/api/v1/course/" });
+    res.redirect("/");
   } catch (error) {
     console.log(error);
   }

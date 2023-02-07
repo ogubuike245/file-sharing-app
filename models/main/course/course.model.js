@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const fileSchema = new mongoose.Schema(
+const courseSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -43,8 +43,8 @@ const fileSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const File = mongoose.model("File", fileSchema);
+const Course = mongoose.model("File", courseSchema);
 
-module.exports = File;
+module.exports = Course;
 
 //APP MODEL / DOCUMENT SCHEMA

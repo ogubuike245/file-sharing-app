@@ -139,7 +139,7 @@ module.exports.verifyOTP = async (request, response) => {
   }
 };
 
-module.exports.sendOTP = async (request, response) => {
+module.exports.reSendOTP = async (request, response) => {
   const { email } = request.body;
   const user = await User.findOne({ email });
   console.log(user);
@@ -150,7 +150,7 @@ module.exports.sendOTP = async (request, response) => {
     console.log("User not verified");
     // Check if the user exists in the Token model and the Token has not expired
     const tokenModel = await Token.findOne({ user: user._id });
-    if(tokenModel){
+    if (tokenModel) {
       await Token.deleteOne({ _id: tokenModel._id });
     }
 
@@ -178,6 +178,12 @@ module.exports.userLogout = async (request, response) => {
   response.cookie("jwt", "", { maximumAge: 1 });
   response.redirect("/");
 };
+
+//PASSWORD RESET
+
+//CREATE NEW PASSWORD
+
+// EDIT USER INFORMATION
 
 // CREATE A JWT TOKEN
 const maximumAge = 3 * 24 * 60 * 60;

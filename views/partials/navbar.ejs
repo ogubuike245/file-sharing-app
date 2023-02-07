@@ -5,12 +5,11 @@
     <li><a href="/api/v1/course/" class="active">HOME</a></li>
 
     <% if (locals.user.role === "admin") { %>
-      
-      <li><a href="/api/v1/course/upload">UPLOAD</a></li>
+    <li><a href="/api/v1/course/upload">UPLOAD</a></li>
     <% } %>
+
     <li><a href="/api/v1/auth/logout">LOGOUT</a></li>
     <% } else { %>
-
     <li><a href="/api/v1/course/" class="active">HOME</a></li>
     <li><a href="/api/v1/auth/login">LOGIN</a></li>
     <li><a href="/api/v1/auth/register">REGISTER</a></li>
@@ -21,6 +20,3 @@
     <div class="bx bx-menu" id="menu-icon"></div>
   </div>
 </header>
-
-
-653257692935-6cfmo70jial21k34sr3jadd2tahbegvm.apps.googleusercontent.com

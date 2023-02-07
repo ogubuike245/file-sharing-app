@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
   <%- include("../../partials/head.ejs") %>
+
   <body>
     <main>
+      <h3>COURSE UPLOADS</h3>
       <section class="container_home">
-        <%- include("../../partials/navbar.ejs") %> <% if (locals.course.length
-        > 0) { %> <% course.forEach(document => { %>
-
+        <%- include("../../partials/navbar.ejs") %> <% course.forEach(document=>
+        { %>
         <article class="<%= document.type %>">
           <h1><%= document.title %></h1>
           <h1><%= document.course %></h1>
@@ -29,14 +30,7 @@
             </a>
           </div>
         </article>
-
-        <% }) %> <% } else { %>
-
-        <article>
-          <h1 class="display">NOTHING UPLOADED</h1>
-        </article>
-
-        <% } %>
+        <% }) %>
       </section>
     </main>
 

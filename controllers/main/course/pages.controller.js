@@ -1,24 +1,33 @@
 const moment = require("moment");
 
 const Course = require("../../../models/main/course/course.model");
+const User = require("../../../models/main/auth/auth.model");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
 module.exports.getAllUploads = async (req, res) => {
-  try {
+  if (
+    User &&
+    User.schema &&
+    User.schema.path("courses") &&
+    User.schema.path("courses").enumValues
+  ) {
     res.render("pages/course/index", {
       title: "HOME",
+      User: User,
     });
-  } catch (error) {
-    console.log(error);
+  } else {
+    res.status(500).send("Error: User schema not defined properly");
   }
 };
-module.exports.getSingleCourseDocuments = async (req, res) => {
+
+// GET ALL DOCUMENTS  UPLOADED UNDER A SPECIFIC COURSE
+module.exports.getCourseCategory = async (req, res) => {
   try {
     const { course } = req.params;
     const content = await getCourse(course);
 
-    res.render("pages/course/course", {
+    res.render("pages/course/courseCategory", {
       course: content,
       title: course,
       moment,
@@ -28,9 +37,21 @@ module.exports.getSingleCourseDocuments = async (req, res) => {
   }
 };
 
-// UPLOAD PAGE
+// UPLOAD  PAGE
 module.exports.uploadPage = async (req, res) => {
-  res.render("pages/course/upload", { title: "UPLOAD" });
+  if (
+    User &&
+    User.schema &&
+    User.schema.path("courses") &&
+    User.schema.path("courses").enumValues
+  ) {
+    res.render("pages/course/upload", {
+      title: "UPLOAD",
+      User: User,
+    });
+  } else {
+    res.status(500).send("Error: User schema not defined properly");
+  }
 };
 
 // DOWNLOAD PAGE
@@ -39,15 +60,14 @@ module.exports.downloadPage = async (req, res) => {
   res.render("pages/course/download", { title: "DOWNLOAD", file: course });
 };
 
-// GET INFO ABOUT A SINGLE DOCUMENT
-module.exports.singleDocumentPage = async (request, response) => {
+// GET INFO ABOUT A SINGLE DOCUMENT UPLOADED UNDER A SPECIFIC COURSE
+module.exports.getUploadedDocumentDetail = async (request, response) => {
   const { id } = request.params;
-
   try {
     const content = await Course.findById(id);
-    response.render("pages/course/single", {
+    response.render("pages/course/courseDetail", {
       document: content,
-      title: "SINGLE",
+      title: "DOCUMENT DETAIL",
       redirect: "/api/v1/course/",
     });
   } catch (error) {
