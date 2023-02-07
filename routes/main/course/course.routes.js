@@ -3,7 +3,7 @@ const router = express.Router();
 const multer = require("multer");
 
 // const upload = multer({ dest: "dist/uploads" });
-const upload = multer({ dest: "/tmps" });
+const upload = multer({ dest: "/tmp" });
 const {
   handleUpload,
   handleDelete,
