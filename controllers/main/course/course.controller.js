@@ -79,7 +79,7 @@ module.exports.handleDownload = async (req, res) => {
       return;
     }
 
-    if (!(await verifyHashedData(req.body.password, file.password))) {
+    if (!(await bcrypt.compare(req.body.password, file.password))) {
       res.render("pages/course/download", {
         error: true,
         title: "DOWNLOAD",
