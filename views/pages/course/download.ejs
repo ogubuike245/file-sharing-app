@@ -5,7 +5,8 @@
     <%- include("../../partials/navbar.ejs") %> <% if (locals.error) { %>
     <div style="color: red; margin-bottom: 1rem">Incorrect Password</div>
     <% } %>
-    <form method="post">
+    <form action="/api/v1/course/download/<%= file._id %>" method="post">
+      <!-- <form method="post"> -->
       <% if(locals.file.password ) { %>
       <h1>ENTER PASSWORD</h1>
       <label for="password">Password:</label>

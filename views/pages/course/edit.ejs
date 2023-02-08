@@ -12,23 +12,46 @@
       <% } %>
 
       <form
-        action="/api/v1/course/edit/<%= file._id %> "
+        action="/api/v1/course/upload"
         method="post"
         enctype="multipart/form-data"
       >
-        <label for="file">File:</label>
-        <input type="file" id="file" name="file" value="<%= file.path %> " />
-        <label for="title">Title:</label>
-        <input type="text" id="title" name="title" value="<%= file.title %> " />
+        <label for="heading">HEADING:</label>
+        <input type="text" id="heading" name="heading" />
+        <label for="title">COURSE TITLE:</label>
+        <select id="title" name="title" required>
+          <% locals.User.schema.path('courses').enumValues.forEach(title => { %>
+          <option value="<%= title %>"><%= title %></option>
+          <% }); %>
+        </select>
 
+        <label for="course">TYPE OF UPLOAD:</label>
+        <select name="type" id="type">
+          <option value="default" disabled selected hidden>
+            Choose a Type
+          </option>
+
+          <option value="assignment">ASSIGNMENT</option>
+          <option value="note">NOTE</option>
+          <option value="aoc">AOC</option>
+          <option value="practical">PRACTICAL</option>
+        </select>
         <label for="description">DESCRIPTION:</label>
-        <textarea name="description" id="description" cols="30" rows="10">
-<%= file.description %></textarea
-        >
+        <textarea
+          name="description"
+          id="description"
+          cols="30"
+          rows="10"
+        ></textarea>
 
-        <label for="course">PASSWORD:</label>
-        <input type="password" id="password" name="password" />
         <button style="grid-column: span 2" type="submit">Share</button>
+
+        <% if (locals.downloadLink != null) { %>
+        <div>
+          Your file is uploaded at
+          <a href="<%= locals.downloadLink %>"><%= locals.downloadLink %></a>
+        </div>
+        <% } %>
       </form>
     </div>
     <%- include("../../partials/footer.ejs") %>

@@ -14,25 +14,31 @@ const {
   uploadPage,
   editPage,
   downloadPage,
+  getIntroPage,
   getCourseCategory,
   getUploadedDocumentDetail,
-  getAllUploads,
+  getHomePage,
 } = require("../../../controllers/main/course/pages.controller");
-const { checkAdmin } = require("../../../middlewares/auth/auth.middleware");
+const {
+  checkAdmin,
+  isLoggedIn,
+  tokenVerification,
+} = require("../../../middlewares/auth/auth.middleware");
 
 // PAGE ONLY ROUTES
 
-router.get("/", getAllUploads);
+// router.get("/", isLoggedIn, getIntroPage);
+router.get("/", getHomePage);
 router.get("/upload", checkAdmin, uploadPage);
 router.get("/edit/:id", checkAdmin, editPage);
-router.get("/document/course/:course", getCourseCategory);
-router.get("/document/:id", getUploadedDocumentDetail);
+router.get("/category/:title", getCourseCategory);
+router.get("/details/:id", getUploadedDocumentDetail);
 router.get("/download/:id", downloadPage);
 
 // OTHER ROUTES
-router.post("/upload", upload.single("file"), handleUpload);
+router.post("/upload", checkAdmin, upload.single("file"), handleUpload);
 router.post("/edit/:id", checkAdmin, upload.single("file"), handleEdit);
-router.post("/delete/:id", handleDelete);
+router.delete("/delete/:id", checkAdmin, handleDelete);
 router.post("/download/:id", handleDownload);
 
 module.exports = router;

@@ -25,7 +25,7 @@ const checkForLoggedInUser = (request, response, next) => {
 // CHECK FOR IF THE USER IS LOGGED IN BEFORE REDIRECTING USER
 const isLoggedIn = (request, response, next) => {
   if (response.locals.user) {
-    response.redirect("/");
+    response.redirect("/api/v1/auth/home");
   } else {
     next();
   }
@@ -33,30 +33,18 @@ const isLoggedIn = (request, response, next) => {
 
 // CHECK FOR USER ROLE AS ADMIN TO DENY ENTRY TO CERTAIN ROUTES
 
-const checkAdmin = (request, response, next) => {
-  const token = request.cookies.jwt;
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, async (error, decodedToken) => {
-      if (error) {
-        response.locals.user = null;
-        response.redirect("/");
-      } else {
-        let user = await User.findById(decodedToken.id);
-        response.locals.user = user;
-        console.log(user);
-        if (response.locals.user.role === "admin") {
-          console.log(response.locals.user.role);
-          next();
-        } else {
-          response.redirect("/");
-        }
-        next();
-      }
-    });
-  } else {
-    response.locals.user = null;
-    response.redirect("/");
+const checkAdmin = (req, res, next) => {
+  const { user } = res.locals;
+
+  if (!user) {
+    return res.redirect("/");
   }
+
+  if (user.role !== "admin") {
+    return res.send("unauthorized");
+  }
+
+  next();
 };
 
 // CHECK TO SEE IF THE  JSON WEB TOKEN EXISTS AND ALSO IF THE TOKEN HAS BEEN VERIFIED

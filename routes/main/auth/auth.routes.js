@@ -18,13 +18,13 @@ const { isLoggedIn } = require("../../../middlewares/auth/auth.middleware");
 
 router.get("/all", getAll);
 router.get("/register", isLoggedIn, register);
-router.get("/verify/:email", isLoggedIn, verifyPAGE);
+router.get("/verify/:email", verifyPAGE);
 router.get("/login", isLoggedIn, login);
 router.get("/logout", userLogout);
 
 router.post("/otp", isLoggedIn, reSendOTP);
 router.post("/register", isLoggedIn, registerUser);
-router.post("/verify/email", isLoggedIn, verifyOTP);
+router.post("/verify/email", verifyOTP);
 router.post("/login", isLoggedIn, loginUser);
 
 module.exports = router;

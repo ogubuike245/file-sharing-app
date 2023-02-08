@@ -4,19 +4,40 @@
 
   <body>
     <main>
-      <%- include("../../partials/navbar.ejs") %> <%
-      locals.User.schema.path('courses').enumValues.forEach(course => { %>
+      <%- include("../../partials/navbar.ejs") %> <% if (locals.user.role ===
+      'admin') { %>
+
+      <h1>ADMIN <%= locals.user.firstName %></h1>
 
       <section class="container_home">
-        <a href="/api/v1/course/document/course/<%= course %>">
+        <% locals.User.schema.path('courses').enumValues.forEach(title => { %>
+
+        <a href="/api/v1/course/category/<%= title %>">
           <button>
-            <h1><%= course %> CLASS</h1>
+            <h1><%= title %> CLASS</h1>
+            <i class="bx bx-right-arrow-alt"></i>
+          </button>
+        </a>
+
+        <% }); %>
+      </section>
+
+      <% } else { %>
+      <h1>USER <%= locals.user.firstName %></h1>
+      <section class="container_home">
+        <% courses.forEach(function(course) { %> <% if (course.title ===
+        user.selectedCourse) { %>
+        <a href="/api/v1/course/category/<%= course.title %>">
+          <button>
+            <h1><%= course.title %> CLASS</h1>
             <i class="bx bx-right-arrow-alt"></i>
           </button>
         </a>
       </section>
 
-      <% }) %>
+      <% } %> <% }); %> <% } %>
+
+      <h1>WELCOME</h1>
     </main>
 
     <%- include("../../partials/footer.ejs") %>

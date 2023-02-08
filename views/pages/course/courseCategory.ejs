@@ -6,14 +6,15 @@
     <main>
       <h3>COURSE UPLOADS</h3>
       <section class="container_home">
-        <%- include("../../partials/navbar.ejs") %> <% course.forEach(document=>
-        { %>
+        <%- include("../../partials/navbar.ejs") %> <% if (locals.course.length
+        > 0) { %> <% course.forEach(document=> { %>
         <article class="<%= document.type %>">
+          <h1><%= document.heading %></h1>
           <h1><%= document.title %></h1>
-          <h1><%= document.course %></h1>
+
           <h1><%= moment(document.createdAt).fromNow() %></h1>
           <div>
-            <a href="/api/v1/course/document/<%= document._id %>"
+            <a href="/api/v1/course/details/<%= document._id %>"
               ><button><i class="bx bx-book-reader"></i> READ MORE</button></a
             >
             <a href="/api/v1/course/edit/<%= document._id %>"
@@ -22,7 +23,7 @@
               </button>
             </a>
 
-            <a href="<%= document.fileLink  %>">
+            <a href="<%= document.downloadLink  %>">
               <button>
                 <i class="bx bx-download bx-flip-horizontal"></i>
                 <%= document.downloadCount %>
@@ -30,7 +31,10 @@
             </a>
           </div>
         </article>
-        <% }) %>
+        <% }) %> <% } else { %>
+
+        <h1>NO UPLOADS YET</h1>
+        <% } %>
       </section>
     </main>
 
