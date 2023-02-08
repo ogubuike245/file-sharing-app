@@ -36,7 +36,7 @@ router.get("/details/:id", getUploadedDocumentDetail);
 router.get("/download/:id", downloadPage);
 
 // OTHER ROUTES
-router.post("/upload", checkAdmin, upload.single("file"), handleUpload);
+router.post("/upload", upload.single("file"), handleUpload);
 router.post("/edit/course/:id", handleEdit);
 router.delete("/delete/:id", checkAdmin, handleDelete);
 router.post("/download/:id", handleDownload);
