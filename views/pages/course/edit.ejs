@@ -7,19 +7,30 @@
       <% if(locals.file) {%>
 
       <h1><%= locals.file.title %></h1>
-      <h1><%= locals.file.originalName %></h1>
+      <h1><%= locals.file.heading %></h1>
+      <h1><%= locals.file.description %></h1>
+      <h1><%= locals.file.type %></h1>
 
       <% } %>
 
       <form
-        action="/api/v1/course/upload"
+        action="/api/v1/course/edit/course/<%= locals.file._id %>"
         method="post"
-        enctype="multipart/form-data"
       >
         <label for="heading">HEADING:</label>
-        <input type="text" id="heading" name="heading" />
+        <input
+          type="text"
+          id="heading"
+          name="heading"
+          placeholder="topic of this upload"
+          value="<%= locals.file.heading %>"
+        />
         <label for="title">COURSE TITLE:</label>
         <select id="title" name="title" required>
+          <!-- <option value="default" disabled selected hidden>Choose Title</option> -->
+          <option value="<%= locals.file.title %>">
+            CURRENTLY SELECTED : <%= locals.file.title %>
+          </option>
           <% locals.User.schema.path('courses').enumValues.forEach(title => { %>
           <option value="<%= title %>"><%= title %></option>
           <% }); %>
@@ -27,10 +38,12 @@
 
         <label for="course">TYPE OF UPLOAD:</label>
         <select name="type" id="type">
-          <option value="default" disabled selected hidden>
-            Choose a Type
+          <!-- <option value="default" disabled selected hidden>
+            Choose Upload Type
+          </option> -->
+          <option value="<%= locals.file.type %>">
+            CURRENTLY SELECTED : <%= locals.file.type %>
           </option>
-
           <option value="assignment">ASSIGNMENT</option>
           <option value="note">NOTE</option>
           <option value="aoc">AOC</option>
@@ -38,20 +51,15 @@
         </select>
         <label for="description">DESCRIPTION:</label>
         <textarea
+          value="<%= locals.file.title %>"
           name="description"
           id="description"
           cols="30"
           rows="10"
-        ></textarea>
-
-        <button style="grid-column: span 2" type="submit">Share</button>
-
-        <% if (locals.downloadLink != null) { %>
-        <div>
-          Your file is uploaded at
-          <a href="<%= locals.downloadLink %>"><%= locals.downloadLink %></a>
-        </div>
-        <% } %>
+        >
+        <%= locals.file.description %></textarea
+        >
+        <button style="grid-column: span 2" type="submit">Upload</button>
       </form>
     </div>
     <%- include("../../partials/footer.ejs") %>

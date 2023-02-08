@@ -38,13 +38,11 @@ const checkAdmin = (req, res, next) => {
 
   if (!user) {
     return res.redirect("/");
-  }
-
-  if (user.role !== "admin") {
+  } else if (user.role !== "admin") {
     return res.send("unauthorized");
+  } else {
+    next();
   }
-
-  next();
 };
 
 // CHECK TO SEE IF THE  JSON WEB TOKEN EXISTS AND ALSO IF THE TOKEN HAS BEEN VERIFIED

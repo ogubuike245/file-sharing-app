@@ -82,23 +82,25 @@ module.exports.handleEdit = async (req, res) => {
   console.log(req.body);
 
   try {
-    if (req.file !== undefined) {
-      await Course.findOneAndUpdate(
-        { _id: id },
-        {
-          // path: req.file.path,
-          ...req.body,
-        }
-      );
-    }
-
-    res.redirect(`/api/v1/course/document/course/${req.body.course}`);
-
-    // process all other fields
+    const result = await Course.updateOne(
+      { _id: id },
+      {
+        $set: {
+          heading: req.body.heading,
+          type: req.body.type,
+          description: req.body.description,
+          title: req.body.title,
+        },
+      },
+      { new: true }
+    );
+    console.log(result);
+    res.redirect(`/api/v1/course/category/${req.body.title}`);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
+
 // DELETE A DOCUMENT
 module.exports.handleDelete = async (req, res) => {
   const { id } = req.params;
