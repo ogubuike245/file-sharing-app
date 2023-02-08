@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const courseSchema = new mongoose.Schema(
   {
-    title: {
+    heading: {
       type: String,
       required: true,
     },
@@ -10,11 +10,10 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    course: {
+    title: {
       type: String,
       required: true,
     },
-
     path: {
       type: String,
       required: true,
@@ -28,17 +27,23 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    password: {
+      type: String,
+      minlength: [3, "MINIMUM LENGTH OF PASSWORD IS 3 NUMBERS"],
+    },
     downloadCount: {
       type: Number,
       required: true,
       default: 0,
     },
+    downloadedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
 
-    password: {
-      type: String,
-      minlength: [3, "MINIMUM LENGTH OF PASSWORD IS 3 NUMBERS"],
-    },
-    fileLink: String,
+    downloadLink: String,
   },
   { timestamps: true }
 );

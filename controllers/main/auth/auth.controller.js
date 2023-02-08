@@ -129,11 +129,9 @@ module.exports.verifyOTP = async (request, response) => {
       { $set: { isVerified: true } }
     );
 
-    await Token.deleteOne({ _id: existingToken._id });
-
-    console.log(existingUser);
-
     response.redirect("/api/v1/auth/login");
+    await Token.deleteOne({ _id: existingToken._id });
+    console.log(existingUser);
   } catch (error) {
     response.status(400).send(error.message);
   }
@@ -141,33 +139,7 @@ module.exports.verifyOTP = async (request, response) => {
 
 module.exports.reSendOTP = async (request, response) => {
   const { email } = request.body;
-  const user = await User.findOne({ email });
-  console.log(user);
-  if (!user) {
-    return console.log("User not found");
-  }
-  if (!user.isVerified) {
-    console.log("User not verified");
-    // Check if the user exists in the Token model and the Token has not expired
-    const tokenModel = await Token.findOne({ user: user._id });
-    if (tokenModel) {
-      await Token.deleteOne({ _id: tokenModel._id });
-    }
-
-    // GENERATE AND HASH THE OTP
-    const generatedOTP = generateOTP();
-    const saltRounds = 10;
-    const hashedOtp = await bcrypt.hash(generatedOTP, saltRounds);
-
-    const token = new Token({
-      value: hashedOtp,
-      user: user._id,
-    });
-    await token.save();
-    await sendVerificationEmail(user, generatedOTP);
-    console.log(user, token);
-    response.redirect(`/api/v1/auth/verify/${user.email}`);
-  }
+  getNewOTP(response, email);
 };
 module.exports.loginUser = async (request, response) => {
   const { email, password } = request.body;
@@ -213,6 +185,37 @@ async function loginUser(email, password, response) {
     }
   } catch (err) {
     console.error(err);
+  }
+}
+
+// GET NEW OTP FUNCTION
+async function getNewOTP(response, email) {
+  const user = await this.findOne({ email });
+  console.log(user);
+  if (!user) {
+    return console.log("User not found");
+  }
+  if (!user.isVerified) {
+    console.log("User not verified");
+    // Check if the user exists in the Token model and the Token has not expired
+    const tokenModel = await Token.findOne({ user: user._id });
+    if (tokenModel) {
+      await Token.deleteOne({ _id: tokenModel._id });
+    }
+
+    // GENERATE AND HASH THE OTP
+    const generatedOTP = generateOTP();
+    const saltRounds = 10;
+    const hashedOtp = await bcrypt.hash(generatedOTP, saltRounds);
+
+    const token = new Token({
+      value: hashedOtp,
+      user: user._id,
+    });
+    await token.save();
+    await sendVerificationEmail(user, generatedOTP);
+    console.log(user, token);
+    response.redirect(`/api/v1/auth/verify/${user.email}`);
   }
 }
 // EDIT A DOCUMENT PAGE

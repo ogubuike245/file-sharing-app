@@ -13,6 +13,7 @@ module.exports.getAllUploads = async (req, res) => {
     console.log(error);
   }
 };
+
 module.exports.getSingleCourseDocuments = async (req, res) => {
   try {
     const { course } = req.params;
@@ -26,17 +27,6 @@ module.exports.getSingleCourseDocuments = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
-};
-
-// UPLOAD PAGE
-module.exports.uploadPage = async (req, res) => {
-  res.render("pages/course/upload", { title: "UPLOAD" });
-};
-
-// DOWNLOAD PAGE
-module.exports.downloadPage = async (req, res) => {
-  const course = await Course.findById(req.params.id);
-  res.render("pages/course/download", { title: "DOWNLOAD", file: course });
 };
 
 // HANDLE THE UPLOADS
