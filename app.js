@@ -30,8 +30,6 @@ app.use((request, response, next) => {
 app.set("view engine", "ejs");
 
 app.get("*", checkForLoggedInUser);
-app.get("/", (_, response) => {
-  response.redirect("/api/v1/course/");
-});
+
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/auth", authRoutes);
