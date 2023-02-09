@@ -12,11 +12,13 @@
       <h1><%= locals.file.type %></h1>
 
       <% } %>
+    
 
       <form
         action="/api/v1/course/edit/course/<%= locals.file._id %>"
-        method="post"
+        method="POST"
       >
+  <input type="hidden" name="_method" value="PUT">
         <label for="heading">HEADING:</label>
         <input
           type="text"
