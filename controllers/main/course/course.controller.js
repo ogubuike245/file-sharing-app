@@ -77,26 +77,33 @@ module.exports.handleDownload = async (req, res) => {
 };
 
 // EDIT A DOCUMENT
+
 module.exports.handleEdit = async (req, res) => {
   const { id } = req.params;
-  console.log(req.body);
-
+  const method = req.body._method || req.method;
+  
   try {
-    const result = await Course.findByIdAndUpdate(
-      req.params.id,
-      {
-          heading: req.body.heading,
-          type: req.body.type,
-          description: req.body.description,
-          title: req.body.title,
-        },
-    );
-    console.log(result);
-    res.redirect(`/api/v1/course/category/${req.body.title}`);
+    if (method === 'PUT') {
+      const result = await Course.findByIdAndUpdate(
+        req.params.id,
+        {
+            heading: req.body.heading,
+            type: req.body.type,
+            description: req.body.description,
+            title: req.body.title,
+          },
+      );
+      console.log(result);
+      res.redirect(`/api/v1/course/category/${req.body.title}`);
+    } else {
+      res.sendStatus(405);
+    }
   } catch (error) {
     console.error(error);
+    res.sendStatus(500);
   }
 };
+
 
 // DELETE A DOCUMENT
 module.exports.handleDelete = async (req, res) => {
