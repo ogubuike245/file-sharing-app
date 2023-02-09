@@ -1,4 +1,3 @@
-
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
@@ -38,10 +37,8 @@ router.get("/download/:id", downloadPage);
 
 // OTHER ROUTES
 router.post("/upload", upload.single("file"), handleUpload);
-router.post("/edit/course/:id", checkAdmin,handleEdit);
+router.post("/edit/course/:id", tokenVerification, checkAdmin, handleEdit);
 router.delete("/delete/:id", checkAdmin, handleDelete);
 router.post("/download/:id", handleDownload);
 
 module.exports = router;
-
-//APP ROUTES
