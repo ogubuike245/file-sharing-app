@@ -82,7 +82,29 @@ module.exports.handleEdit = async (req, res) => {
   const { id } = req.params;
   const method = req.body._method || req.method;
   
+  
   try {
+    const { id } = req.params;
+    const { title, description, heading , type} = req.body;
+
+    const course = await Course.findById(id);
+    if (!course) {
+      return res.status(404).send({ error: "Course not found" });
+    }
+
+    course.title = title;
+    course.description = description;
+    course.type=type;
+    course.heading=heading;
+    await course.save();
+
+    return res.status(200).send({ message: "Course updated successfully" });
+  } catch (error) {
+    return res.status(500).send({ error: "Server error" });
+  }
+
+  
+  /* try {
     if (method === 'PUT') {
       const result = await Course.findByIdAndUpdate(
         req.params.id,
@@ -101,7 +123,7 @@ module.exports.handleEdit = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
-  }
+  } */
 };
 
 
