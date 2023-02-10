@@ -80,7 +80,7 @@ module.exports.handleDownload = async (req, res) => {
 
 module.exports.handleEdit = async (req, res) => {
   const { id } = req.params;
-  const method = req.body._method || req.method;
+  //const method = req.body._method || req.method;
   
   
   try {
@@ -92,6 +92,7 @@ module.exports.handleEdit = async (req, res) => {
       return res.status(404).send({ error: "Course not found" });
     }
 
+    // const result = await collection.updateOne({ _id }, { $set: updateData });
     course.title = title;
     course.description = description;
     course.type=type;
