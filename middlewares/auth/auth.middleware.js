@@ -33,17 +33,19 @@ const isLoggedIn = (request, response, next) => {
 
 // CHECK FOR USER ROLE AS ADMIN TO DENY ENTRY TO CERTAIN ROUTES
 
-const checkAdmin = (req, res, next) => {
+// middlewares/checkAdmin.js
+module.exports = (req, res, next) => {
   const { user } = res.locals;
 
   if (!user) {
-    return res.redirect("/");
+    return res.status(401).send({ message: "Unauthorized" });
   } else if (user.role !== "admin") {
-    return res.send("unauthorized");
+    return res.status(403).send({ message: "Forbidden" });
   } else {
     next();
   }
 };
+
 
 // CHECK TO SEE IF THE  JSON WEB TOKEN EXISTS AND ALSO IF THE TOKEN HAS BEEN VERIFIED
 const tokenVerification = (request, response, next) => {
