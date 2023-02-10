@@ -36,6 +36,15 @@ const getCoursesForUser = async (user) => {
   }
 };
 
+async function getTitles() {
+  try {
+    const titles = await Course.distinct("title");
+    return titles;
+  } catch (error) {
+    throw error;
+  }
+}
+
 // const getCoursesForUser = async (user) => {
 //   if (user.role === "admin") {
 //     return User.schema.path("courses").enumValues;

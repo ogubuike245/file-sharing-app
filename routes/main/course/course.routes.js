@@ -29,6 +29,10 @@ const {
   tokenVerification,
   checkForLoggedInUser,
 } = require("../../../middlewares/auth/auth.middleware");
+const {
+  checkUserAccessToCourse,
+  checkUserAccessToCourseViaId,
+} = require("../../../middlewares/course/course.middleware");
 
 // PAGE ONLY ROUTES
 
@@ -38,8 +42,18 @@ router.get("/upload", checkAdmin, uploadPage);
 router.get("/edit/:id", checkAdmin, editPage);
 router.get("/edit/password/:id", checkAdmin, editPasswordPage);
 router.get("/edit/file/:id", checkAdmin, editFileUploadedPage);
-router.get("/category/:title", getCourseCategory);
-router.get("/details/:id", getUploadedDocumentDetail);
+router.get(
+  "/category/:title",
+  checkForLoggedInUser,
+  checkUserAccessToCourse,
+  getCourseCategory
+);
+router.get(
+  "/details/:id",
+  checkForLoggedInUser,
+  checkUserAccessToCourseViaId,
+  getUploadedDocumentDetail
+);
 router.get("/download/:id", downloadPage);
 
 // OTHER ROUTES
