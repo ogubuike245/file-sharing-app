@@ -35,7 +35,8 @@ module.exports.handleUpload = async (req, res, next) => {
       title: req.body.title,
       password: hashedPassword,
     });
-    course.downloadLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
+    // course.downloadLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
+    course.downloadLink = `http://localhost:5000/api/v1/course/download/${course.id}`;
     const savedCourse = await course.save();
     console.log(savedCourse);
     res.redirect(`/api/v1/course/category/${savedCourse.title}`);
@@ -138,11 +139,14 @@ module.exports.handleDelete = async (req, res) => {
   const { id } = req.params;
   console.log(id);
   try {
-    // await Course.deleteMany();
-    await Course.findByIdAndDelete(id);
+    await Course.deleteMany();
+    // await Course.findByIdAndDelete(id);
     // await Course.deleteOne({ _id: ObjectID(req.params.id) });
 
-    res.status(200).json({ message: "FILE DELETED", redirect: "/" });
+    res.status(200).json({
+      message: "FILE DELETED",
+      redirect: "/",
+    });
   } catch (error) {
     console.log(error);
   }

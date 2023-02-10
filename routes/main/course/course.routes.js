@@ -64,7 +64,7 @@ router.post(
   upload.single("file"),
   handleEditUploadedDocument
 );
-router.delete("/delete/:id", checkAdmin, handleDelete);
+router.delete("/delete/:id", checkForLoggedInUser, checkAdmin, handleDelete);
 router.post("/download/:id", handleDownload);
 
 module.exports = router;

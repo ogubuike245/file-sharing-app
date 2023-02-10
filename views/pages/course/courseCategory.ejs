@@ -17,11 +17,15 @@
             <a href="/api/v1/course/details/<%= document._id %>"
               ><button><i class="bx bx-book-reader"></i> READ MORE</button></a
             >
+
+            <% if (locals.user.role === "admin") { %>
+
             <a href="/api/v1/course/edit/<%= document._id %>"
               ><button>
                 <i class="bx bxs-edit-alt"></i>
               </button>
             </a>
+            <% } %>
 
             <a href="<%= document.downloadLink  %>">
               <button>

@@ -29,7 +29,7 @@ app.use((request, response, next) => {
 
 app.set("view engine", "ejs");
 
-
+app.get("*", checkForLoggedInUser);
 app.get("/", (_, response) => {
   response.redirect("/api/v1/course/");
 });

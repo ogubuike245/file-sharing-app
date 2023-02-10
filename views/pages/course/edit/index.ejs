@@ -13,14 +13,12 @@
       <h1><%= locals.file.type %></h1>
 
       <% } %>
-    
 
       <form
         data-doc="<%= locals.file._id %>"
         action="/api/v1/course/edit/course/<%= locals.file._id %>"
         method="POST"
       >
-  
         <label for="heading">HEADING:</label>
         <input
           type="text"
@@ -54,8 +52,15 @@
           <option value="practical">PRACTICAL</option>
         </select>
         <label for="description">DESCRIPTION:</label>
-        <textarea name="description" id="description" cols="30" rows="10">
-        </textarea>
+        <textarea
+          name="description"
+          id="description"
+          cols="10"
+          rows="3"
+          value="<%= locals.file.description %>"
+        >
+<%= title %></textarea
+        >
         <button style="grid-column: span 2" type="submit">
           EDIT / MAKE CHANGES
         </button>

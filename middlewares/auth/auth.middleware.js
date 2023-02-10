@@ -34,29 +34,18 @@ const isLoggedIn = (request, response, next) => {
 
 // CHECK FOR USER ROLE AS ADMIN TO DENY ENTRY TO CERTAIN ROUTES
 
-<<<<<<< HEAD
 const checkAdmin = async (request, response, next) => {
   const user = await request.user;
 
+  console.log(user);
   if (!user) {
     return response.redirect("/");
   } else if (user.role !== "admin") {
     return response.send("unauthorized");
-=======
-// middlewares/checkAdmin.js
-const checkAdmin = (req, res, next) => {
-  const { user } = res.locals;
-
-  if (!user) {
-    return res.status(401).send({ message: "Unauthorized" });
-  } else if (user.role !== "admin") {
-    return res.status(403).send({ message: "Forbidden" });
->>>>>>> 94b1d11c7202e9558ebd0243cd139904c814284a
   } else {
     next();
   }
 };
-
 
 // CHECK TO SEE IF THE  JSON WEB TOKEN EXISTS AND ALSO IF THE TOKEN HAS BEEN VERIFIED
 const tokenVerification = (request, response, next) => {
