@@ -16,13 +16,7 @@ module.exports.getHomePage = async (req, res) => {
 
   let courses;
   try {
-    courses =
-      user.role === "admin"
-        ? User &&
-          User.schema &&
-          User.schema.path("courses") &&
-          User.schema.path("courses").enumValues
-        : await Course.find({ title: user.selectedCourse });
+    courses = await getCoursesForUser(user);
 
     return res.render("pages/course/index", {
       title: "HOME",
@@ -31,6 +25,14 @@ module.exports.getHomePage = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).send(error);
+  }
+};
+
+const getCoursesForUser = async (user) => {
+  if (user.role === "admin") {
+    return User.schema.path("courses").enumValues;
+  } else {
+    return await Course.findOne({ title: user.selectedCourse });
   }
 };
 

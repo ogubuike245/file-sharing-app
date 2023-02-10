@@ -25,17 +25,15 @@
       <% } else { %>
       <h1>USER <%= locals.user.firstName %></h1>
       <section class="container_home">
-        <% courses.forEach(function(course) { %> <% if (course.title ===
-        user.selectedCourse) { %>
-        <a href="/api/v1/course/category/<%= course.title %>">
+        <a href="/api/v1/course/category/<%= courses.title %>">
           <button>
-            <h1><%= course.title %> CLASS</h1>
+            <h1><%= courses.title %> CLASS</h1>
             <i class="bx bx-right-arrow-alt"></i>
           </button>
         </a>
       </section>
 
-      <% } %> <% }); %> <% } %>
+      <% } %>
 
       <h1>WELCOME</h1>
     </main>
