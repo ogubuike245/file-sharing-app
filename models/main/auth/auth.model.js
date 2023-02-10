@@ -20,7 +20,8 @@ const userSchema = new Schema({
     type: String,
     enum: ["chemistry", "physics", "biology"],
   },
-  selectedCourse: { type: String, required: true },
+  selectedCourse: [{ type: String, required: true }],
+
   password: {
     type: String,
     required: true,

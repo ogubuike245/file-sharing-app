@@ -32,9 +32,17 @@ const getCoursesForUser = async (user) => {
   if (user.role === "admin") {
     return User.schema.path("courses").enumValues;
   } else {
-    return await Course.findOne({ title: user.selectedCourse });
+    return [user.selectedCourse];
   }
 };
+
+// const getCoursesForUser = async (user) => {
+//   if (user.role === "admin") {
+//     return User.schema.path("courses").enumValues;
+//   } else {
+//     return await Course.find({ title: { $in: user.selectedCourse } });
+//   }
+// };
 
 // GET ALL DOCUMENTS  UPLOADED UNDER A SPECIFIC COURSE
 module.exports.getCourseCategory = async (req, res) => {

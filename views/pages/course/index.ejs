@@ -22,20 +22,19 @@
         <% }); %>
       </section>
 
-      <% } else { %>
-      <h1>USER <%= locals.user.firstName %></h1>
-      <section class="container_home">
-        <a href="/api/v1/course/category/<%= courses.title %>">
-          <button>
-            <h1><%= courses.title %> CLASS</h1>
-            <i class="bx bx-right-arrow-alt"></i>
-          </button>
-        </a>
-      </section>
+      <% } else { %> <% if (locals.user) { %>
+      <h2>WELCOME, USER <%= locals.user.firstName %></h2>
+      <h3>Courses registered for:</h3>
 
-      <% } %>
+      <% locals.user.selectedCourse.forEach(function(course) { %>
 
-      <h1>WELCOME</h1>
+      <a href="/api/v1/course/category/<%= course %>">
+        <button>
+          <h1><%= course %> CLASS</h1>
+          <i class="bx bx-right-arrow-alt"></i>
+        </button>
+      </a>
+      <% }); %> <% } %> <% } %>
     </main>
 
     <%- include("../../partials/footer.ejs") %>
