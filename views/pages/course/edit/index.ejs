@@ -13,12 +13,14 @@
       <h1><%= locals.file.type %></h1>
 
       <% } %>
+    
 
       <form
         data-doc="<%= locals.file._id %>"
         action="/api/v1/course/edit/course/<%= locals.file._id %>"
-        method="post"
+        method="POST"
       >
+  
         <label for="heading">HEADING:</label>
         <input
           type="text"

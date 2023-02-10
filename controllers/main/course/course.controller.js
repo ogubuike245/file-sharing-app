@@ -80,6 +80,7 @@ module.exports.handleDownload = async (req, res) => {
 // EDIT A DOCUMENT
 
 module.exports.handleEdit = async (req, res) => {
+<<<<<<< HEAD
   const { id } = req.params.id;
 
   try {
@@ -131,7 +132,56 @@ module.exports.handleEditUploadedDocument = async (req, res) => {
   } catch (err) {
     console.error(err);
   }
+=======
+  const { id } = req.params;
+  //const method = req.body._method || req.method;
+  
+  
+  try {
+    const { id } = req.params;
+    const { title, description, heading , type} = req.body;
+
+    const course = await Course.findById(id);
+    if (!course) {
+      return res.status(404).send({ error: "Course not found" });
+    }
+
+    // const result = await collection.updateOne({ _id }, { $set: updateData });
+    course.title = title;
+    course.description = description;
+    course.type=type;
+    course.heading=heading;
+    await course.save();
+
+    return res.status(200).send({ message: "Course updated successfully" });
+  } catch (error) {
+    return res.status(500).send({ error: "Server error" });
+  }
+
+  
+  /* try {
+    if (method === 'PUT') {
+      const result = await Course.findByIdAndUpdate(
+        req.params.id,
+        {
+            heading: req.body.heading,
+            type: req.body.type,
+            description: req.body.description,
+            title: req.body.title,
+          },
+      );
+      console.log(result);
+      res.redirect(`/api/v1/course/category/${req.body.title}`);
+    } else {
+      res.sendStatus(405);
+    }
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  } */
+>>>>>>> 94b1d11c7202e9558ebd0243cd139904c814284a
 };
+
 
 // DELETE A DOCUMENT
 module.exports.handleDelete = async (req, res) => {

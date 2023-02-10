@@ -15,7 +15,7 @@ connectToDatabase(app);
 
 app.use(express.static("./dist"));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(compression());
 app.use(helmet());
@@ -29,9 +29,10 @@ app.use((request, response, next) => {
 
 app.set("view engine", "ejs");
 
-app.get("*", checkForLoggedInUser);
+
 app.get("/", (_, response) => {
   response.redirect("/api/v1/course/");
 });
+
 app.use("/api/v1/course", courseRoutes);
 app.use("/api/v1/auth", authRoutes);
