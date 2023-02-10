@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include("../../../partials/head.ejs") %>
+  <body>
+    <%- include("../../../partials/navbar.ejs") %>
+    <div class="upload-container">
+      <form
+        action="/api/v1/course/edit/course/file/<%= locals.file._id %>"
+        method="post"
+        enctype="multipart/form-data"
+      >
+        <div>
+          <label for="title">TITLE</label>
+          <h1><%= locals.file.title %></h1>
+          <input type="hidden" name="title" value="<%= locals.file.title %>" />
+        </div>
+        <div>
+          <label for="title">TITLE</label>
+          <h1><%= locals.file.originalName%></h1>
+        </div>
+        <label for="file">FILE:</label>
+        <input type="file" id="file" name="file" required />
+        <button style="grid-column: span 2" type="submit">CHANGE FILE</button>
+      </form>
+      <% if (locals.downloadLink != null) { %>
+      <div>
+        Your file is uploaded at
+        <a href="<%= locals.downloadLink %>"><%= locals.downloadLink %></a>
+      </div>
+      <% } %>
+    </div>
+    <%- include("../../../partials/footer.ejs") %>
+  </body>
+</html>

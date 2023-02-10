@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-  <%- include("../../partials/head.ejs") %>
+  <%- include("../../../partials/head.ejs") %>
   <body>
-    <%- include("../../partials/navbar.ejs") %>
+    <%- include("../../../partials/navbar.ejs") %>
     <div class="upload-container">
       <% if(locals.file) {%>
 
+      <h1><%= locals.file._id %></h1>
       <h1><%= locals.file.title %></h1>
       <h1><%= locals.file.heading %></h1>
       <h1><%= locals.file.description %></h1>
@@ -14,6 +15,7 @@
       <% } %>
 
       <form
+        data-doc="<%= locals.file._id %>"
         action="/api/v1/course/edit/course/<%= locals.file._id %>"
         method="post"
       >
@@ -50,18 +52,27 @@
           <option value="practical">PRACTICAL</option>
         </select>
         <label for="description">DESCRIPTION:</label>
-        <textarea
-          value="<%= locals.file.title %>"
-          name="description"
-          id="description"
-          cols="30"
-          rows="10"
-        >
-        <%= locals.file.description %></textarea
-        >
-        <button style="grid-column: span 2" type="submit">Upload</button>
+        <textarea name="description" id="description" cols="30" rows="10">
+        </textarea>
+        <button style="grid-column: span 2" type="submit">
+          EDIT / MAKE CHANGES
+        </button>
       </form>
     </div>
-    <%- include("../../partials/footer.ejs") %>
+
+    <button>
+      <a href="/api/v1/course/edit/password/<%= locals.file._id  %>">
+        CHANGE DOCUMENT PASSWORD</a
+      >
+    </button>
+
+    <button>
+      <a href="/api/v1/course/edit/file/<%= locals.file._id  %>">
+        CHANGE FILE UPLOADED</a
+      >
+    </button>
+    <%- include("../../../partials/footer.ejs") %>
+
+    <!-- <script src="/js/course/handleEdit.js"></script> -->
   </body>
 </html>

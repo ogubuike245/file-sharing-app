@@ -3,23 +3,24 @@ const jwt = require("jsonwebtoken");
 const User = require("../../models/main/auth/auth.model");
 
 // CHECK IF THERE IS A LOGGED IN USER FROM THE JWT TOKEN
-const checkForLoggedInUser = (request, response, next) => {
+
+const checkForLoggedInUser = async (request, response, next) => {
   const token = request.cookies.jwt;
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, async (error, decodedToken) => {
-      if (error) {
-        response.locals.user = null;
-        next();
-      } else {
-        let user = await User.findById(decodedToken.id);
-        response.locals.user = user;
-        next();
-      }
-    });
-  } else {
+  try {
+    if (token) {
+      const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findById(decodedToken.id);
+      response.locals.user = user;
+      request.user = user;
+    } else {
+      response.locals.user = null;
+      request.user = null;
+    }
+  } catch (error) {
     response.locals.user = null;
-    next();
+    request.user = null;
   }
+  next();
 };
 
 // CHECK FOR IF THE USER IS LOGGED IN BEFORE REDIRECTING USER
@@ -33,13 +34,13 @@ const isLoggedIn = (request, response, next) => {
 
 // CHECK FOR USER ROLE AS ADMIN TO DENY ENTRY TO CERTAIN ROUTES
 
-const checkAdmin = (req, res, next) => {
-  const { user } = res.locals;
+const checkAdmin = async (request, response, next) => {
+  const user = await request.user;
 
   if (!user) {
-    return res.redirect("/");
+    return response.redirect("/");
   } else if (user.role !== "admin") {
-    return res.send("unauthorized");
+    return response.send("unauthorized");
   } else {
     next();
   }

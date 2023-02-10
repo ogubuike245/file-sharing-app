@@ -5,38 +5,6 @@ const User = require("../../../models/main/auth/auth.model");
 
 //GET ALL THE UPLOADED DOCUMENTS IN THE DATABASE
 
-// module.exports.getAllUploads = async (req, res) => {
-//   if (
-//     User &&
-//     User.schema &&
-//     User.schema.path("courses") &&
-//     User.schema.path("courses").enumValues
-//   ) {
-//     res.render("pages/course/index", {
-//       title: "HOME",
-//       User: User,
-//     });
-//   } else {
-//     res.status(500).send("Error: User schema not defined properly");
-//   }
-
-//   try {
-//     const file = await Course.findById(id);
-//     if (!User || !User.schema || !User.schema.path("courses")) {
-//       throw new Error("User schema not defined properly");
-//     }
-
-//     res.render("pages/course/edit", {
-//       file,
-//       title: "EDIT",
-//       User,
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send("Error: User schema not defined properly");
-//   }
-// };
-
 module.exports.getHomePage = async (req, res) => {
   const { user } = res.locals;
 
@@ -131,10 +99,38 @@ module.exports.editPage = async (req, res) => {
       throw new Error("User schema not defined properly");
     }
 
-    res.render("pages/course/edit", {
+    res.render("pages/course/edit/index", {
       file,
       title: "EDIT",
       User,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error: User schema not defined properly");
+  }
+};
+module.exports.editPasswordPage = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const file = await Course.findById(id);
+    res.render("pages/course/edit/password", {
+      file,
+      title: "EDIT",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error: User schema not defined properly");
+  }
+};
+module.exports.editFileUploadedPage = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const file = await Course.findById(id);
+    res.render("pages/course/edit/uploadedDocument", {
+      file,
+      title: "EDIT",
     });
   } catch (error) {
     console.error(error);

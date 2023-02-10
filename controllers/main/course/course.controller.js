@@ -7,6 +7,7 @@ const Course = require("../../../models/main/course/course.model");
 module.exports.getSingleCourseDocuments = async (req, res) => {
   try {
     const { course } = req.params;
+
     const content = await getCourse(course);
 
     res.render("pages/course/course", {
@@ -77,27 +78,58 @@ module.exports.handleDownload = async (req, res) => {
 };
 
 // EDIT A DOCUMENT
+
 module.exports.handleEdit = async (req, res) => {
-  const { id } = req.params;
-  console.log(req.body);
+  const { id } = req.params.id;
 
   try {
-    const result = await Course.updateOne(
-      { _id: id },
-      {
-        $set: {
-          heading: req.body.heading,
-          type: req.body.type,
-          description: req.body.description,
-          title: req.body.title,
-        },
-      },
-      { new: true }
-    );
+    const result = await Course.findByIdAndUpdate(req.params.id, {
+      heading: req.body.heading,
+      type: req.body.type,
+      description: req.body.description,
+      title: req.body.title,
+    });
     console.log(result);
     res.redirect(`/api/v1/course/category/${req.body.title}`);
   } catch (error) {
     console.error(error);
+    res.sendStatus(500);
+  }
+};
+module.exports.handleEditPassowrd = async (req, res) => {
+  const { id } = req.params.id;
+  const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+  console.log(req.body);
+
+  try {
+    const result = await Course.findByIdAndUpdate(req.params.id, {
+      password: hashedPassword,
+    });
+    console.log(result);
+    res.redirect(`/api/v1/course/category/${req.body.title}`);
+  } catch (error) {
+    console.error(error);
+    res.sendStatus(500);
+  }
+};
+module.exports.handleEditUploadedDocument = async (req, res) => {
+  const { id } = req.params.id;
+  // const hashedPassword = await bcrypt.hash(req.body.password, 10);
+
+  console.log(req.body);
+
+  try {
+    const result = await Course.findByIdAndUpdate(req.params.id, {
+      path: req.file.path,
+      originalName: req.file.originalname,
+      title: req.body.title,
+    });
+    console.log(result);
+
+    res.redirect(`/api/v1/course/category/${req.body.title}`);
+  } catch (err) {
+    console.error(err);
   }
 };
 
