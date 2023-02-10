@@ -34,7 +34,7 @@ const isLoggedIn = (request, response, next) => {
 // CHECK FOR USER ROLE AS ADMIN TO DENY ENTRY TO CERTAIN ROUTES
 
 // middlewares/checkAdmin.js
-module.exports = (req, res, next) => {
+const checkAdmin = (req, res, next) => {
   const { user } = res.locals;
 
   if (!user) {
