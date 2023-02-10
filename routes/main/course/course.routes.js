@@ -38,6 +38,7 @@ router.get("/download/:id", downloadPage);
 // OTHER ROUTES
 router.post("/upload", upload.single("file"), handleUpload);
 router.post("/edit/course/:id", tokenVerification, checkAdmin, handleEdit);
+//router.post("/edit/:id", checkAdmin, );
 router.delete("/delete/:id", checkAdmin, handleDelete);
 router.post("/download/:id", handleDownload);
 
