@@ -35,8 +35,8 @@ module.exports.handleUpload = async (req, res, next) => {
       title: req.body.title,
       password: hashedPassword,
     });
-    // course.downloadLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
-    course.downloadLink = `http://localhost:5000/api/v1/course/download/${course.id}`;
+    course.downloadLink = `https://gubifileshare.cyclic.app/api/v1/course/download/${course.id}`;
+    // course.downloadLink = `http://localhost:5000/api/v1/course/download/${course.id}`;
     const savedCourse = await course.save();
     console.log(savedCourse);
     res.redirect(`/api/v1/course/category/${savedCourse.title}`);
