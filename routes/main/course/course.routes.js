@@ -16,7 +16,7 @@ const {
   uploadPage,
   editPage,
   downloadPage,
-  getIntroPage,
+  // getIntroPage,
   getCourseCategory,
   getUploadedDocumentDetail,
   editPasswordPage,
@@ -43,7 +43,6 @@ router.get("/details/:id", getUploadedDocumentDetail);
 router.get("/download/:id", downloadPage);
 
 // OTHER ROUTES
-<<<<<<< HEAD
 router.post(
   "/upload",
   checkForLoggedInUser,
@@ -65,11 +64,6 @@ router.post(
   upload.single("file"),
   handleEditUploadedDocument
 );
-=======
-router.post("/upload", upload.single("file"), handleUpload);
-router.post("/edit/course/:id", checkAdmin, handleEdit);
-//router.post("/edit/:id", checkAdmin, );
->>>>>>> 94b1d11c7202e9558ebd0243cd139904c814284a
 router.delete("/delete/:id", checkAdmin, handleDelete);
 router.post("/download/:id", handleDownload);
 
