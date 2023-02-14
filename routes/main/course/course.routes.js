@@ -16,7 +16,6 @@ const {
   uploadPage,
   editPage,
   downloadPage,
-  // getIntroPage,
   getCourseCategory,
   getUploadedDocumentDetail,
   editPasswordPage,
@@ -36,7 +35,7 @@ const {
 
 // PAGE ONLY ROUTES
 
-// router.get("/", isLoggedIn, getIntroPage);
+
 router.get("/", getHomePage);
 router.get("/upload", checkAdmin, uploadPage);
 router.get("/edit/:id", checkAdmin, editPage);
