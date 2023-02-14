@@ -22,10 +22,7 @@ app.use(helmet());
 app.use(cors());
 app.use(morgan("dev"));
 
-app.use((request, response, next) => {
-  response.locals.path = request.path;
-  next();
-});
+
 
 app.set("view engine", "ejs");
 
