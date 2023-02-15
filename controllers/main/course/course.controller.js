@@ -141,7 +141,7 @@ module.exports.handleDelete = async (req, res) => {
   try {
     // await Course.deleteMany();
     await Course.findByIdAndDelete(id);
-    // await Course.deleteOne({ _id: ObjectID(req.params.id) });
+  
 
     res.status(200).json({
       message: "FILE DELETED",
