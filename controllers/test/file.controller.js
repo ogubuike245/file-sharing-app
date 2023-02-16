@@ -35,8 +35,8 @@ describe('POST /api/v1/register', () => {
   });
 
   afterAll(async () => {
-    await User.deleteMany();
-    await Token.deleteMany();
+    // await User.deleteMany();
+    // await Token.deleteMany();
   });
 
   test('should register a new user', async () => {
