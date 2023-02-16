@@ -6,22 +6,23 @@ const User = require("../../models/main/auth/auth.model");
 
 const checkForLoggedInUser = async (request, response, next) => {
   const token = request.cookies.jwt;
+
   try {
     if (token) {
       const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decodedToken.id);
-      response.locals.user = user;
-      request.user = user;
+      request.user = await User.findById(decodedToken.id);
     } else {
-      response.locals.user = null;
       request.user = null;
     }
+
   } catch (error) {
-    response.locals.user = null;
     request.user = null;
   }
+
+  response.locals.user = request.user;
   next();
 };
+
 
 // CHECK FOR IF THE USER IS LOGGED IN BEFORE REDIRECTING USER
 const isLoggedIn = (request, response, next) => {
@@ -48,23 +49,24 @@ const checkAdmin = async (request, response, next) => {
 };
 
 // CHECK TO SEE IF THE  JSON WEB TOKEN EXISTS AND ALSO IF THE TOKEN HAS BEEN VERIFIED
-const tokenVerification = (request, response, next) => {
+const tokenVerification = async (request, response, next) => {
   const token = request.cookies.jwt;
 
-  if (token) {
-    jwt.verify(token, process.env.JWT_SECRET, (error, decodedToken) => {
-      if (error) {
-        console.log(error.message);
-        response.redirect("/api/v1/auth/login");
-      } else {
-        console.log("REQUIRE AUTH : ", decodedToken);
-        next();
-      }
-    });
-  } else {
+  try {
+    if (token) {
+      const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
+      console.log("REQUIRE AUTH : ", decodedToken);
+      request.user = decodedToken;
+      next();
+    } else {
+      response.redirect("/api/v1/auth/login");
+    }
+  } catch (error) {
+    console.log(error.message);
     response.redirect("/api/v1/auth/login");
   }
 };
+
 
 module.exports = {
   tokenVerification,
